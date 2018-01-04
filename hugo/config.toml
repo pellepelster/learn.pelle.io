@@ -1,0 +1,12 @@
+baseURL = "http://example.org/"
+languageCode = "en-us"
+title = "learn.pelle.io"
+staticDir = ["static"]
+
+theme = "hugo-theme-learn"
+
+[outputs]
+home = [ "HTML", "RSS", "JSON"]
+
+[params]
+themeVariant = "green"

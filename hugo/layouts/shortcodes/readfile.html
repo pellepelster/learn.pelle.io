@@ -1,0 +1,6 @@
+{{$file := .Get "file"}}
+{{- if eq (.Get "markdown") "true" -}}
+{{- $file  | readFile -}}
+{{- else -}}
+{{ $file  | readFile | safeHTML -}}
+{{- end -}}

@@ -1,0 +1,200 @@
+#!/bin/bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+set -eu
+
+HUGO_DIR="${DIR}/hugo"
+TEMP_DIR="${DIR}/build"
+CONTENT_DIR="${HUGO_DIR}/content"
+ARTIFACTS_DIR="${DIR}/artifacts"
+SOURCES_DIR="${DIR}/sources"
+STEPS_DIR="${SOURCES_DIR}/steps"
+TODO_PROJECT_DIR="${SOURCES_DIR}/todo_project"
+HAS_SNIPPETS=0
+
+function generate_snippets() {
+  TEMPLATE_FILE=${1:-}
+
+  if grep '//snippet' ${TEMPLATE_FILE}; then
+    echo "generating snippets for file ${TEMPLATE_FILE}"
+  else
+    echo "file ${TEMPLATE_FILE} has sno snippets"
+    return
+  fi
+
+  local template_filename=$(basename ${TEMPLATE_FILE})
+  # number lines
+  nl -ba -s '@@@' -w 1 ${TEMPLATE_FILE} > ${TEMP_DIR}/${template_filename}.numbered
+
+  # add split marker and split files
+  cat ${TEMP_DIR}/${template_filename}.numbered | sed 's/.*\/\/snippet:.*/---split---\n&/' > ${TEMP_DIR}/${template_filename}.numbered.with_split_markers
+  csplit ${TEMP_DIR}/${template_filename}.numbered.with_split_markers -f ${TEMP_DIR}/${template_filename}.splitted /---split---/ '{*}'
+
+  for FILE in ${TEMP_DIR}/${template_filename}.splitted*; do
+    # get snippet filename from //snippet:$name tag
+    TMP=$(grep -oP "snippet:(.*)" ${FILE} || true)
+    SNIPPET_ID=${TMP#snippet:}
+    if [ ! -z "${SNIPPET_ID}" ]; then
+      echo "processing snippet ${SNIPPET_ID}"
+      # reduce snippets to actual snippet content
+      awk '/snippet/{flag=1} /eos/{print;flag=0} flag' ${FILE} > ${TEMP_DIR}/snippet_${SNIPPET_ID}
+
+      local linenostart=$(cat ${TEMP_DIR}/snippet_${SNIPPET_ID} | awk -F'@@@' '{print $1}' | sort | head -n1)
+      local linenoend=$(cat ${TEMP_DIR}/snippet_${SNIPPET_ID} | awk -F'@@@' '{print $1}' | sort | tail -n1)
+      echo "{{% github href=\"LICENSE#L${linenostart}-L${linenoend}\" %}}${template_filename}{{% /github %}}" > ${TEMP_DIR}/hugo_snippet_${SNIPPET_ID}
+      echo "{{< highlight go \"linenos=table,linenostart=${linenostart},hl_lines=\" >}}" >> ${TEMP_DIR}/hugo_snippet_${SNIPPET_ID}
+      cat  ${TEMP_DIR}/snippet_${SNIPPET_ID} | awk -F'@@@' '{print $2}' | sed 's/\/\/snippet.*$//' | sed 's/\/\/eos.*$//' >> ${TEMP_DIR}/hugo_snippet_${SNIPPET_ID}
+      echo '{{< / highlight >}}' >> ${TEMP_DIR}/hugo_snippet_${SNIPPET_ID}
+    fi
+  done
+}
+
+function insert_snippets() {
+  (
+    local snippet_file=${1:-}
+    local content_dir=${2:-}
+
+    echo "inserting snippets for ${snippet_file} in content dir ${content_dir}"
+    local snippet_id=$(basename ${snippet_file})
+    snippet_id=${snippet_id#hugo_snippet_}
+    while IFS= read -d $'\0' -r content_file ; do
+      if [[ -f ${content_file} ]]; then
+        echo "processing content file ${content_file}"
+
+        local starttag="<!--snippet:${snippet_id}-->"
+        local endtag="<!--eos:${snippet_id}-->"
+
+        awk "
+            BEGIN       {p=1}
+            /^${starttag}/   {print;system(\"cat ${snippet_file}\");p=0}
+            /^${endtag}/     {p=1}
+            p" ${content_file} > ${TEMP_DIR}/content_${snippet_id}.tmp
+            cp ${TEMP_DIR}/content_${snippet_id}.tmp ${content_file}
+
+      fi
+    done < <(find ${content_dir} -iname '*' -print0)
+  )
+}
+
+function insert_files() {
+  local content_dir=${1:-}
+
+  echo "looking for file includes in '${content_dir}'"
+  for source_file in $(git ls-tree -r master --name-only ${content_dir}); do
+    if $(grep --quiet "<!--file:.*-->" ${source_file}); then
+      echo "found includes in file '${source_file}'"
+
+      for include_filename in $(cat ${source_file} | grep -oP '(?<=\<!--file:)(.*)(?=-->)'); do
+        echo "inserting file '${include_filename}' into '${source_file}'"
+
+        local starttag="<!--file:${include_filename//\//\\/}-->"
+        local endtag="<!--eof:${include_filename//\//\\/}-->"
+
+        local include_tempfile="${TEMP_DIR}/$(basename ${include_filename}).include.tmp"
+        local tempfile="${TEMP_DIR}/$(basename ${source_file}).tmp"
+
+        echo "{{% github href=\"LICENSE\" %}}$(basename ${include_filename}){{% /github %}}" > ${include_tempfile}
+        echo "{{< highlight go \"linenos=table\" >}}" >> ${include_tempfile}
+        cat ${SOURCES_DIR}/${include_filename} >> ${include_tempfile}
+        echo '{{< / highlight >}}' >> ${include_tempfile}
+
+        awk "
+            BEGIN       {p=1}
+            /^${starttag}/   {print;system(\"cat ${include_tempfile}\");p=0}
+            /^${endtag}/     {p=1}
+            p" ${source_file} > ${tempfile}
+        # cat ${tempfile}
+        cp ${tempfile} ${source_file}
+      done
+
+    else
+      echo "no include found in file '${source_file}'"
+    fi
+  done
+}
+
+
+function generate_and_insert_snippets() {
+  local sources_dir=${1:-}
+  local content_dir=${2:-}
+
+  insert_files ${content_dir}
+
+  echo "generating snippets for source dir ${sources_dir}"
+  for source_file in $(git ls-tree -r master --name-only ${sources_dir}); do
+    generate_snippets ${source_file}
+  done
+
+  for snippet_file in ${TEMP_DIR}/hugo_snippet_*; do
+    insert_snippets ${snippet_file} ${content_dir}
+  done
+
+}
+
+function task_generate {
+  ensure_environment
+
+  generate_and_insert_snippets ${SOURCES_DIR} ${CONTENT_DIR}
+
+  echo "generating all artifacts"
+  for RUN_FILE in $(find ${STEPS_DIR} -name run); do
+    TODO_PROJECT_DIR=${TODO_PROJECT_DIR} ARTIFACTS_DIR=${ARTIFACTS_DIR} ${RUN_FILE} generate
+  done
+}
+
+function ensure_environment {
+  if [ ! -d ${ARTIFACTS_DIR} ]; then
+      mkdir -p ${ARTIFACTS_DIR}
+  fi
+
+  if [ ! -d ${TEMP_DIR} ]; then
+    mkdir ${TEMP_DIR}
+  fi
+}
+
+function ensure_full_project_is_buildable {
+  (
+    cd ${TODO_PROJECT_DIR}
+    ./gradlew build
+  )
+}
+
+function task_test {
+  ensure_full_project_is_buildable
+  echo "testing all artifacts"
+  for RUN_FILE in $(find ${STEPS_DIR} -name run); do
+    TODO_PROJECT_DIR=${TODO_PROJECT_DIR} ARTIFACTS_DIR=${ARTIFACTS_DIR} ${RUN_FILE} test
+  done
+}
+
+function task_build {
+  ensure_environment
+}
+
+function task_hugo {
+  (
+    cd ${HUGO_DIR}
+    hugo serve
+  )
+}
+
+function task_clean {
+  rm -rf ${ARTIFACTS_DIR}
+  rm -rf ${TEMP_DIR}
+}
+
+function task_usage {
+  echo "Usage: $0 generate | clean | test | build | hugo"
+  exit 1
+}
+
+CMD=${1:-}
+shift || true
+case ${CMD} in
+  generate) task_generate ;;
+  clean) task_clean ;;
+  test) task_test ;;
+  build) task_build ;;
+  hugo) task_hugo ;;
+  *) task_usage ;;
+esac
