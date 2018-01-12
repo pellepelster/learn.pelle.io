@@ -7,3 +7,5 @@ artifacts
 .project
 .settings
 .gradle
+*.tfstate*
+.terraform

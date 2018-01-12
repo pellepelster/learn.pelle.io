@@ -21,20 +21,16 @@ With the availbility of tools like [Terraform](xxx), [Ansible](xxx) or [Puppet](
 When we are able to spin up new instances without any manual intervention scaling becomes a problem of the past. Spinning up new instances comes at virtually no cost and we are able to create or dispose instances depending on the current load
 
 #### Ephemeral systems (MTTR)
-In case of a failure of single instances we can now afford to just kill the faulty instance and spin up a replacement greatly reducing the time to recovery.  In case the outage was introduced by a chnage we made, we now can also easily roll back our infrastructure by rolling back the change we made.
+In case of a instance failure we can now afford to just kill the faulty instance and spin up a replacement greatly reducing the time to recovery. In case the outage was introduced by a change we made, we now can also easily roll back our infrastructure by rolling back the change we made.
 
 #### Consistency
 Configuration errors are less likely to occur when the configuration comes from source code instead from manual steps performed by humans. Every new server will be an exact replica of the previous one. Special snowflake servers with specific quirks are a thing of the past as well (as long as everyone resists the urge to log into the server and change things by hand)
 
 #### Traceability
-Like your sourcecode your infrastructure code is version controlled allowing us to trace configuration changes by looking at version control logs. Infrastructure changelog.
+Like your sourcecode your infrastructure code is version controlled allowing us to trace configuration changes by looking at version control logs. Basically the version control log is now the infrastructure changelog.
 
 #### Documentation
 The infrastructure sourcecode is now also the single source of truth when it comes to infrastructure documentation. No more outdated documents or stale wikis: The sourcecode 100% reflects the current state of your environment.
 
 #### Continuously Delivery
 The ability to automatically create whole environments enables us the continously test infrastructure changes. Every change can be picked up by a [deployment pipeline](XXX) and deployed into a seperate test environment by a CI server before being applied to the production envrionment.
-
-## Terraform
-
-When it comes to the sheer number of supported cloud providers currently [Terraform](XXX) is the tool of our choiche. All major cloud providers contribute up-to-date plugins that abstract their apis into the text based declarative Terraform configuration language which is based on the [HasiCorp configuration language (HCL)](https://github.com/hashicorp/hcl).
