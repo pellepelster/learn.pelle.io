@@ -5,11 +5,11 @@ set -eu
 prefix=$(realpath "${DIR}/../../")
 STEP_DIR=${DIR#${prefix}/}
 
-ARTIFACTS_DIR="${ARTIFACTS_DIR:-}"
+ARTEFACTS_DIR="${ARTEFACTS_DIR:-}"
 TODO_PROJECT_DIR="${TODO_PROJECT_DIR:-}"
 
 for var in "${TODO_PROJECT_DIR}" \
-  "${ARTIFACTS_DIR}" ; do
+  "${ARTEFACTS_DIR}" ; do
   if [ -z "$var" ] ; then
     echo "Environment variable missing"
     exit 1
@@ -18,17 +18,17 @@ done
 
 function task_test {
   (
-    cd ${ARTIFACTS_DIR}/${STEP_DIR}
+    cd ${ARTEFACTS_DIR}/${STEP_DIR}
     ./gradlew idea eclipse :todo-server:build
   )
 }
 
 function task_generate {
   echo "generating ${STEP_DIR}"
-  mkdir -p ${ARTIFACTS_DIR}/${STEP_DIR}
+  mkdir -p ${ARTEFACTS_DIR}/${STEP_DIR}
   (
     cd ${TODO_PROJECT_DIR}
-    rsync -av --progress . ${ARTIFACTS_DIR}/${STEP_DIR} --exclude node_modules --exclude .gradle --exclude .idea --exclude build --exclude out
+    rsync -av --progress . ${ARTEFACTS_DIR}/${STEP_DIR} --exclude node_modules --exclude .gradle --exclude .idea --exclude build --exclude out
   )
 }
 

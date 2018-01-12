@@ -5,4 +5,4 @@ chapter: true
 weight: 10
 ---
 
-This chapter will guide you through the basic project setup as well as out first deployment.
+This chapter will guide you through the basic project setup as well as the first deployment.

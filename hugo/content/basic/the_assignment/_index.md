@@ -5,7 +5,7 @@ weight: 1
 disableToc: true
 ---
 
-Congratulations, your just landed your first job at Todo Inc. After endless nights of programming and designing your company has just been founded with millions of venture capital after pitching investors with a shiny protoype. The dilema: It's just a prototype and its your job to turn this pile of hasty assembled source files and workarounds into a production ready setup.
+Congratulations, you just landed your first job at Todo Inc. After endless nights of relentless programming and designing your company has just been founded with millions of venture capital after pitching investors with a shiny protoype. The dilema: It's just a prototype and its your job to turn this pile of hasty assembled source files and workarounds into a production ready setup.
 
 ## Project Files
 
@@ -27,7 +27,7 @@ The build.gradle file includes the Idea (`apply plugin: 'idea'`) and the Eclipse
 
 ## Frontend
 
-The frontend team has gifted is with a a Vue.js based frontend that luckily also contains some basic unit tests. It is built and bundled using webpack, so to start the frontend locally just change into the the frontend project directory, and run npm:
+The frontend team has gifted is with a a Vue.js based frontend that also contains some basic unit tests. It is built and bundled using webpack, so to start the frontend locally just change into the the frontend project directory, and run npm:
 
 ```
 $ cd todo-frontend
@@ -43,7 +43,7 @@ The frontend is now available at http://localhost:8080, and it is expecting a ru
 
 ![Screenshot](http://via.placeholder.com/800x600)
 
-The local dev instance comes with all bells and whistles like live reloading for cod and css, to create the real deployable artifacts run the build via npm:
+The local dev instance comes with all bells and whistles like live reloading for code and css, to create the real deployable artifacts run the build via npm:
 
 ```
 $ cd todo-frontend

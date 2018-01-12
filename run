@@ -6,7 +6,7 @@ set -eu
 HUGO_DIR="${DIR}/hugo"
 TEMP_DIR="${DIR}/build"
 CONTENT_DIR="${HUGO_DIR}/content"
-ARTIFACTS_DIR="${DIR}/artifacts"
+ARTEFACTS_DIR="../learn-artefacts"
 SOURCES_DIR="${DIR}/sources"
 STEPS_DIR="${SOURCES_DIR}/steps"
 TODO_PROJECT_DIR="${SOURCES_DIR}/todo_project"
@@ -41,7 +41,7 @@ function generate_snippets() {
 
       local linenostart=$(cat ${TEMP_DIR}/snippet_${SNIPPET_ID} | awk -F'@@@' '{print $1}' | sort | head -n1)
       local linenoend=$(cat ${TEMP_DIR}/snippet_${SNIPPET_ID} | awk -F'@@@' '{print $1}' | sort | tail -n1)
-      echo "{{% github href=\"LICENSE#L${linenostart}-L${linenoend}\" %}}${template_filename}{{% /github %}}" > ${TEMP_DIR}/hugo_snippet_${SNIPPET_ID}
+      echo "{{% github href=\"${TEMPLATE_FILE}#L${linenostart}-L${linenoend}\" %}}${template_filename}{{% /github %}}" > ${TEMP_DIR}/hugo_snippet_${SNIPPET_ID}
       echo "{{< highlight go \"linenos=table,linenostart=${linenostart},hl_lines=\" >}}" >> ${TEMP_DIR}/hugo_snippet_${SNIPPET_ID}
       cat  ${TEMP_DIR}/snippet_${SNIPPET_ID} | awk -F'@@@' '{print $2}' | sed 's/\/\/snippet.*$//' | sed 's/\/\/eos.*$//' >> ${TEMP_DIR}/hugo_snippet_${SNIPPET_ID}
       echo '{{< / highlight >}}' >> ${TEMP_DIR}/hugo_snippet_${SNIPPET_ID}
@@ -93,7 +93,7 @@ function insert_files() {
         local include_tempfile="${TEMP_DIR}/$(basename ${include_filename}).include.tmp"
         local tempfile="${TEMP_DIR}/$(basename ${source_file}).tmp"
 
-        echo "{{% github href=\"LICENSE\" %}}$(basename ${include_filename}){{% /github %}}" > ${include_tempfile}
+        echo "{{% github href=\"${source_file}\" %}}$(basename ${include_filename}){{% /github %}}" > ${include_tempfile}
         echo "{{< highlight go \"linenos=table\" >}}" >> ${include_tempfile}
         cat ${SOURCES_DIR}/${include_filename} >> ${include_tempfile}
         echo '{{< / highlight >}}' >> ${include_tempfile}
@@ -113,7 +113,6 @@ function insert_files() {
   done
 }
 
-
 function generate_and_insert_snippets() {
   local sources_dir=${1:-}
   local content_dir=${2:-}
@@ -121,9 +120,13 @@ function generate_and_insert_snippets() {
   insert_files ${content_dir}
 
   echo "generating snippets for source dir ${sources_dir}"
-  for source_file in $(git ls-tree -r master --name-only ${sources_dir}); do
-    generate_snippets ${source_file}
-  done
+  (
+    cd ${sources_dir}
+    pwd
+    for source_file in $(git ls-tree -r master --name-only .); do
+      generate_snippets ${source_file}
+    done
+  )
 
   for snippet_file in ${TEMP_DIR}/hugo_snippet_*; do
     insert_snippets ${snippet_file} ${content_dir}
@@ -134,17 +137,17 @@ function generate_and_insert_snippets() {
 function task_generate {
   ensure_environment
 
-  generate_and_insert_snippets ${SOURCES_DIR} ${CONTENT_DIR}
+  echo "generating all artefacts"
+  # for RUN_FILE in $(find ${STEPS_DIR} -name run); do
+  #   # TODO_PROJECT_DIR=${TODO_PROJECT_DIR} ARTEFACTS_DIR=$(readlink -f ${ARTEFACTS_DIR}) ${RUN_FILE} generate
+  # done
 
-  echo "generating all artifacts"
-  for RUN_FILE in $(find ${STEPS_DIR} -name run); do
-    TODO_PROJECT_DIR=${TODO_PROJECT_DIR} ARTIFACTS_DIR=${ARTIFACTS_DIR} ${RUN_FILE} generate
-  done
+  generate_and_insert_snippets ${ARTEFACTS_DIR} ${CONTENT_DIR}
 }
 
 function ensure_environment {
-  if [ ! -d ${ARTIFACTS_DIR} ]; then
-      mkdir -p ${ARTIFACTS_DIR}
+  if [ ! -d ${ARTEFACTS_DIR} ]; then
+      mkdir -p ${ARTEFACTS_DIR}
   fi
 
   if [ ! -d ${TEMP_DIR} ]; then
@@ -161,9 +164,9 @@ function ensure_full_project_is_buildable {
 
 function task_test {
   ensure_full_project_is_buildable
-  echo "testing all artifacts"
+  echo "testing all artefacts"
   for RUN_FILE in $(find ${STEPS_DIR} -name run); do
-    TODO_PROJECT_DIR=${TODO_PROJECT_DIR} ARTIFACTS_DIR=${ARTIFACTS_DIR} ${RUN_FILE} test
+    TODO_PROJECT_DIR=${TODO_PROJECT_DIR} ARTEFACTS_DIR=${ARTEFACTS_DIR} ${RUN_FILE} test
   done
 }
 
@@ -179,7 +182,7 @@ function task_hugo {
 }
 
 function task_clean {
-  rm -rf ${ARTIFACTS_DIR}
+  # rm -rf ${ARTEFACTS_DIR}
   rm -rf ${TEMP_DIR}
 }
 
