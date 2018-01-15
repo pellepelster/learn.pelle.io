@@ -2,14 +2,13 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 set -eu
 
-prefix=$(realpath "${DIR}/../../")
-STEP_DIR=${DIR#${prefix}/}
-
 ARTEFACTS_DIR="${ARTEFACTS_DIR:-}"
 TODO_PROJECT_DIR="${TODO_PROJECT_DIR:-}"
+STEP_DIR="${STEP_DIR:-}"
 
 for var in "${TODO_PROJECT_DIR}" \
-  "${ARTEFACTS_DIR}" ; do
+  "${ARTEFACTS_DIR}" \
+  "${STEP_DIR}" ; do
   if [ -z "$var" ] ; then
     echo "Environment variable missing"
     exit 1
@@ -26,10 +25,7 @@ function task_test {
 function task_generate {
   echo "generating ${STEP_DIR}"
   mkdir -p ${ARTEFACTS_DIR}/${STEP_DIR}
-  (
-    cd ${TODO_PROJECT_DIR}
-    rsync -av --progress . ${ARTEFACTS_DIR}/${STEP_DIR} --exclude node_modules --exclude .gradle --exclude .idea --exclude build --exclude out
-  )
+  rsync -a ${TODO_PROJECT_DIR}/ ${ARTEFACTS_DIR}/${STEP_DIR} --exclude node_modules --exclude .gradle --exclude .idea --exclude build --exclude out
 }
 
 CMD=${1:-}

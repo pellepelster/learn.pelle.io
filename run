@@ -137,11 +137,20 @@ function generate_and_insert_snippets() {
 function task_generate {
   ensure_environment
 
-  echo "generating all artefacts"
-  for RUN_FILE in $(find ${STEPS_DIR} -name run); do
-    TODO_PROJECT_DIR=${TODO_PROJECT_DIR} ARTEFACTS_DIR=$(readlink -f ${ARTEFACTS_DIR}) ${RUN_FILE} generate
-  done
+  echo "generating artefacts for ${STEPS_DIR}"
+  local last_step_dir=''
+  for RUN_FILE in $(find ${STEPS_DIR} -name run | sort); do
+    local step_dir=$(dirname ${RUN_FILE})
 
+    prefix=$(realpath "${STEPS_DIR}")
+    step_dir=${step_dir#${prefix}/}
+
+    echo "generating artefact for ${step_dir}"
+    STEPS_DIR=${STEPS_DIR} LAST_STEP_DIR=${last_step_dir} STEP_DIR=${step_dir} TODO_PROJECT_DIR=${TODO_PROJECT_DIR} ARTEFACTS_DIR=$(readlink -f ${ARTEFACTS_DIR}) ${RUN_FILE} generate
+    last_step_dir=${step_dir}
+
+  done
+  exit 0
   generate_and_insert_snippets ${ARTEFACTS_DIR} ${CONTENT_DIR}
 }
 

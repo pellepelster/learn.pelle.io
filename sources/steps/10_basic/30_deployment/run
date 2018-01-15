@@ -1,15 +1,18 @@
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-set -eux
-
-prefix=$(realpath "${DIR}/../../")
-STEP_DIR=${DIR#${prefix}/}
+set -eu
 
 ARTEFACTS_DIR="${ARTEFACTS_DIR:-}"
 TODO_PROJECT_DIR="${TODO_PROJECT_DIR:-}"
+STEP_DIR="${STEP_DIR:-}"
+STEPS_DIR="${STEPS_DIR:-}"
+LAST_STEP_DIR="${LAST_STEP_DIR:-}"
 
 for var in "${TODO_PROJECT_DIR}" \
-  "${ARTEFACTS_DIR}" ; do
+  "${ARTEFACTS_DIR}" \
+  "${STEPS_DIR}" \
+  "${LAST_STEP_DIR}" \
+  "${STEP_DIR}" ; do
   if [ -z "$var" ] ; then
     echo "Environment variable missing"
     exit 1
@@ -23,8 +26,8 @@ function task_test {
 function task_generate {
   echo "generating ${STEP_DIR}"
   mkdir -p ${ARTEFACTS_DIR}/${STEP_DIR}
-  cd ${DIR}
-  rsync -av --progress . ${ARTEFACTS_DIR}/${STEP_DIR} --exclude run --exclude .terraform --exclude "*.tfstate*"
+  rsync -a ${ARTEFACTS_DIR}/${LAST_STEP_DIR}/ ${ARTEFACTS_DIR}/${STEP_DIR}
+  rsync -a ${DIR}/ ${ARTEFACTS_DIR}/${STEP_DIR} --exclude run --exclude .terraform --exclude "*.tfstate*"
 }
 
 CMD=${1:-}
