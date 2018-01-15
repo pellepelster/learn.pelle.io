@@ -138,9 +138,9 @@ function task_generate {
   ensure_environment
 
   echo "generating all artefacts"
-  # for RUN_FILE in $(find ${STEPS_DIR} -name run); do
-  #   # TODO_PROJECT_DIR=${TODO_PROJECT_DIR} ARTEFACTS_DIR=$(readlink -f ${ARTEFACTS_DIR}) ${RUN_FILE} generate
-  # done
+  for RUN_FILE in $(find ${STEPS_DIR} -name run); do
+    TODO_PROJECT_DIR=${TODO_PROJECT_DIR} ARTEFACTS_DIR=$(readlink -f ${ARTEFACTS_DIR}) ${RUN_FILE} generate
+  done
 
   generate_and_insert_snippets ${ARTEFACTS_DIR} ${CONTENT_DIR}
 }

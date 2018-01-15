@@ -17,28 +17,14 @@ for var in "${TODO_PROJECT_DIR}" \
 done
 
 function task_test {
-  (
-    cd ${ARTEFACTS_DIR}/${STEP_DIR}/todo-server
-    ./gradlew idea eclipse build
-  )
+  echo "test"
 }
 
 function task_generate {
   echo "generating ${STEP_DIR}"
   mkdir -p ${ARTEFACTS_DIR}/${STEP_DIR}
-  (
-    cd ${TODO_PROJECT_DIR}
-    rsync -av --progress . ${ARTEFACTS_DIR}/${STEP_DIR} --exclude build.gradle --exclude .gradle --exclude settings.gradle --exclude FrontendContent.java  --exclude node_modules --exclude .idea --exclude build --exclude out
-  )
-  (
-    cd ${DIR}
-    rsync -av --progress . ${ARTEFACTS_DIR}/${STEP_DIR} --exclude run
-    cd ${ARTEFACTS_DIR}/${STEP_DIR}
-    mv -f gradlew* todo-server
-    rm -rf todo-server/gradle
-    mv -f gradle todo-server/gradle
-
-  )
+  cd ${DIR}
+  rsync -av --progress . ${ARTEFACTS_DIR}/${STEP_DIR} --exclude run --exclude .terraform --exclude "*.tfstate*"
 }
 
 CMD=${1:-}
