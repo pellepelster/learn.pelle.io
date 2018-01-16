@@ -25,7 +25,7 @@ function task_test {
 function task_generate {
   echo "generating ${STEP_DIR}"
   mkdir -p ${ARTEFACTS_DIR}/${STEP_DIR}
-  rsync -a ${TODO_PROJECT_DIR}/ ${ARTEFACTS_DIR}/${STEP_DIR} --exclude node_modules --exclude .gradle --exclude .idea --exclude build --exclude out
+  rsync -a ${TODO_PROJECT_DIR}/ ${ARTEFACTS_DIR}/${STEP_DIR} --exclude node_modules --exclude .gradle --exclude .idea --exclude todo-backend/build --exclude out
 }
 
 CMD=${1:-}
