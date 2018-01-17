@@ -60,7 +60,7 @@ allprojects {
 As already mentioned it is vitally important for the build not to rely on any local prerequistes on the machine that executes the build. Keep in mind that the build has to work on your machine, your coworkers machine or in a continus integration environment. Luckily for us a [node.js plugin](https://github.com/srs/gradle-node-plugin) for Gradle already exists that creates a node.js environment for us, we just have to apply the plugin from the public Gradle maven repository:
 
 <!--snippet:frontend_nodejs_plugin_dependency-->
-{{% github href="basic/packaging/todo-frontend/build.gradle#L1-L9" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L1-L9" %}}build.gradle{{% /github %}}
 {{< highlight go "linenos=table,linenostart=1,hl_lines=" >}}
 buildscript { 
 	repositories {
@@ -82,7 +82,7 @@ apply plugin: 'com.moowork.node'
 The plugin can be configured to a specific node.js/npm version:
 
 <!--snippet:frontend_nodejs_plugin_configuration-->
-{{% github href="basic/packaging/todo-frontend/build.gradle#L16-L22" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L16-L22" %}}build.gradle{{% /github %}}
 {{< highlight go "linenos=table,linenostart=16,hl_lines=" >}}
 node { 
   version = '6.3.1'
@@ -97,7 +97,7 @@ node {
 Now we create a new task that executes the npm build:
 
 <!--snippet:frontend_nodejs_build-->
-{{% github href="basic/packaging/todo-frontend/build.gradle#L24-L28" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L24-L28" %}}build.gradle{{% /github %}}
 {{< highlight go "linenos=table,linenostart=24,hl_lines=" >}}
 task frontendBuild(type: NpmTask) { 
 	args = [ 'run', 'build' ]
@@ -110,7 +110,7 @@ frontendBuild.dependsOn('npmInstall')
 and package the resulting file in a jar file:
 
 <!--snippet:frontend_nodejs_jar-->
-{{% github href="basic/packaging/todo-frontend/build.gradle#L30-L37" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L30-L37" %}}build.gradle{{% /github %}}
 {{< highlight go "linenos=table,linenostart=30,hl_lines=" >}}
  task frontendJar(type: Jar) { 
  	appendix = 'frontend'
@@ -126,7 +126,7 @@ frontendJar.dependsOn('frontendBuild')
 The last step is to add the resulting jar to a [Gradle configuration named](https://docs.gradle.org/current/userguide/dependency_management.html#sub:configurations) `frontend` so dependent projects (in our case the frontend-server project) can include the frontend artifacts in their build cycle:
 
 <!--snippet:frontend_nodejs_gradle_config-->
-{{% github href="basic/packaging/todo-frontend/build.gradle#L39-L40" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L39-L40" %}}build.gradle{{% /github %}}
 {{< highlight go "linenos=table,linenostart=39,hl_lines=" >}}
 configurations { frontend }
 artifacts { frontend frontendJar } 

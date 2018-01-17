@@ -5,17 +5,14 @@ weight: 20
 disableToc: true
 ---
 
-## Deploying the application
-
 Now that we have a deployable artefact we can finally move forward and start deploying the application. As we currently have have no on-premise hardware at hand we are going to use one of the major cloud providers to deploy the first iteration of our game-changing application.
 
 ### Infrastructure as code
-
-The obvious next step is to create an account with the cloud provider of our choiche, spin up a server and upload and run our application on it. But before we start clicking around in the AWS/GCE/Azure console lets step back for a moment and think about what our infrastructure will look like now and in the future.
+The obvious next step is to create an account with the cloud provider of our choiche, spin up a server, upload and run our application on it. But before we start clicking around in the AWS/GCE/Azure console lets step back for a moment and think about what our infrastructure will look like now and in the future.
 
 For now we would propably get away with handcrafting a single server to run our application. But when we think about the future, about things like scaling, disaster recovery, different enviroments, automated deployments, documentation and auditing it becomes quite clear that doing all those things manually we have to give up the flexibility and speed gained by moving into the cloud and would be back in the old days when we installed physical hardware in racks and configured them manually, only without the part of lifting heavy servers over our heads until someone tightens the screws.
 
-With the availbility of tools like [Terraform](xxx), [Ansible](xxx) or [Puppet](xxx) we are now able to define all needed resources in the form of a descriptive language that we can handle like any other piece of sourcecode. Being able to create and destroy new server instances any time without any manual intervention gives us several advantages.
+With the availbility of tools like [Terraform](https://terraform.io), [Ansible](https://www.ansible.com/overview/how-ansible-works) or [Puppet](https://puppet.com/products/how-puppet-works) we are now able to define all needed resources in the form of a descriptive language that we can handle like any other piece of sourcecode. Being able to create and destroy new server instances any time without any manual intervention gives us several advantages.
 
 #### Scaling
 When we are able to spin up new instances without any manual intervention scaling becomes a problem of the past. Spinning up new instances comes at virtually no cost and we are able to create or dispose instances depending on the current load
@@ -33,4 +30,4 @@ Like your sourcecode your infrastructure code is version controlled allowing us 
 The infrastructure sourcecode is now also the single source of truth when it comes to infrastructure documentation. No more outdated documents or stale wikis: The sourcecode 100% reflects the current state of your environment.
 
 #### Continuously Delivery
-The ability to automatically create whole environments enables us the continously test infrastructure changes. Every change can be picked up by a [deployment pipeline](XXX) and deployed into a seperate test environment by a CI server before being applied to the production envrionment.
+The ability to automatically create whole environments enables us the continously test infrastructure changes. Every change can be picked up by a [deployment pipeline](https://martinfowler.com/bliki/DeploymentPipeline.html) and deployed into a seperate test environment by a CI server before being applied to the production envrionment.

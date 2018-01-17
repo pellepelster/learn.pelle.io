@@ -27,7 +27,8 @@ function task_generate {
   echo "generating ${STEP_DIR}"
   mkdir -p ${ARTEFACTS_DIR}/${STEP_DIR}
   rsync -a ${ARTEFACTS_DIR}/${LAST_STEP_DIR}/ ${ARTEFACTS_DIR}/${STEP_DIR}
-  rsync -a ${DIR}/ ${ARTEFACTS_DIR}/${STEP_DIR} --exclude run --exclude .terraform --exclude "*.tfstate*"
+  echo ${ARTEFACTS_DIR}/${STEP_DIR}
+  rsync -av ${DIR}/ ${ARTEFACTS_DIR}/${STEP_DIR} --exclude run --exclude .terraform --exclude "*.tfstate*"
 }
 
 CMD=${1:-}
