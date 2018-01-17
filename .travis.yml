@@ -2,7 +2,7 @@ env:
   secure: aPFrWmlAJdBvREcwA3Nihgxbts94XCDfWoO1elk+/zjDKXQdu0Ht15qerTk+rPOGosgL9OLkoFamQVDsFoG8Xlf678R5MgpWd/wlxw/fQ3uNPpqawxxQSxgzurm2/qWKlRQr2e+Ex2EJVJrgGhyrXouNQP/oN0Us39G3O1bWL8vJ5A+SaJ4WAWfr6RZEbV77jBgLekPQkCjIFeDPXwit5HTWfIO0YsNm2ZTUUHx5I5uCtRNhtYpdpd+HNLysR+WTp4uEcUzGTWorTCPPmGnnUccqcWlsO7pVhaAj3RJycTWkSNbFQWbLpyXFPBQ2tbPH4H7V9BvQ/AJXMl0E3e0CQqFIzQKQ86EUH5T/OijiuhWpy02/7QTKDmCcnYlabaGcMxUOCxJbzL4POJB8mE7SzFM1wM0UZjajMb/TznrYtwffwoXu0wOmGFAEf+cAllncBHUmErGYwRPp9MTFWFkuuhHAwSWrAkyiFFNhgfzk5uufzAeJRJn4Bo7tIeoD2Hk4GhU8evUIV6p54D4J1P5lITK+Vpwp6HBKueYLvnHaiZmsxP3uQ3U1p4EzPkZtmKRVFkK9dR/gOTyuptMc1ArHDtpG42YNDfyj7qZ01S8C4GiRpmZSLrOqJyPRgAsUbF6Dr1FXfvrHy2HTn2fUgv2nBXDx150MyoZA7AMCFJvp3uc=
 before_install:
 - sudo apt-get install ncftp
-- sudo apt-get install coreutils
+- sudo apt-get install realpath
 - wget https://github.com/gohugoio/hugo/releases/download/v0.32.4/hugo_0.32.4_Linux-64bit.deb
 - sudo dpkg -i hugo_0.32.4_Linux-64bit.deb
 
