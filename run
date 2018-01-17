@@ -6,7 +6,7 @@ set -eu
 HUGO_DIR="${DIR}/hugo"
 TEMP_DIR="${DIR}/build"
 CONTENT_DIR="${HUGO_DIR}/content"
-ARTEFACTS_DIR="../learn-artefacts"
+ARTEFACTS_DIR="${DIR}/artefacts"
 SOURCES_DIR="${DIR}/sources"
 STEPS_DIR="${SOURCES_DIR}/steps"
 TODO_PROJECT_DIR="${SOURCES_DIR}/todo_project"
@@ -180,13 +180,14 @@ function task_test {
 
 function task_build {
   ensure_environment
+  task_generate
+  cd ${HUGO_DIR}
+  hugo
 }
 
 function task_hugo {
-  (
-    cd ${HUGO_DIR}
-    hugo serve
-  )
+  cd ${HUGO_DIR}
+  hugo serve
 }
 
 function task_clean {
@@ -194,8 +195,12 @@ function task_clean {
   rm -rf ${TEMP_DIR}
 }
 
+function task_deploy {
+  ncftpput -R -v -u ${FTP_USERNAME:-$(pass 'learn.pelle.io/ftp/userid')} -p ${FTP_PASSWORD:-$(pass 'learn.pelle.io/ftp/password')} ftp.pelle.io / ${HUGO_DIR}/public/*
+}
+
 function task_usage {
-  echo "Usage: $0 generate | clean | test | build | hugo"
+  echo "Usage: $0 generate | clean | test | build | deploy | hugo"
   exit 1
 }
 
@@ -207,5 +212,6 @@ case ${CMD} in
   test) task_test ;;
   build) task_build ;;
   hugo) task_hugo ;;
+  deploy) task_deploy ;;
   *) task_usage ;;
 esac

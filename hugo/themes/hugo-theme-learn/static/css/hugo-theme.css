@@ -1,5 +1,8 @@
 /* Insert here special css for hugo theme, on top of any other imported css */
 
+.header-link {
+  float: right;
+}
 
 /* Table of contents */
 
@@ -34,7 +37,7 @@
 }
 
 body {
-    font-size: 18px !important;
+    font-size: 20px !important;
     color: #323232 !important;
 }
 

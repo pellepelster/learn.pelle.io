@@ -9,3 +9,5 @@ artifacts
 .gradle
 *.tfstate*
 .terraform
+artefacts
+hugo/public

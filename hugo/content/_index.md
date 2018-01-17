@@ -8,19 +8,26 @@ This guide will lead you step by step through the process of packaging, deployin
 
 ## Conventions
 
-## Snippets
+### Sources
+At the top of each page inside the breadcrumb panel  
+
+### Snippets
 The sourcecode for each step is available at [https://github.com/pellepelster/learn-artefacts](https://github.com/pellepelster/learn-artefacts). On the top of each sourcecode snippet a link points directly to the source file containing the snippet.
 
 {{% github href="hugo/content/basic/packaging/_index.md" %}}snippet{{% /github %}}
 {{< highlight go "linenos=table" >}}
-// snippet
+class ExampleClass {
+
+}
 {{< / highlight >}}
 
 ### Shell commands
-Commands that should be executed on your shell are displayed like shown below. Base directory for each command is always the source directory for the current topic.
+Lines beginning with a `$` sign are commands that can be executed, where the base directory for each command is always the source directory for the current topic.
 
 ```
-terraform init
+$ this is a shell command
+
+This is the commands output
 ```
 
 ## Topics
