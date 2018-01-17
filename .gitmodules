@@ -1,3 +1,3 @@
 [submodule "artefacts"]
 	path = artefacts
-	url = git@github.com:pellepelster/learn-artefacts.git
+	url = https://github.com/pellepelster/learn-artefacts.git
