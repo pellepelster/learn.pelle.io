@@ -1,0 +1,8 @@
+{{% github href="sources/steps/10_basic/30_deployment/deploy/todo.tf#L1-L5" %}}sources/steps/10_basic/30_deployment/deploy/todo.tf{{% /github %}}
+{{< highlight go "linenos=table,linenostart=1,hl_lines=" >}}
+data "aws_ami" "amazon_linux2_ami" {
+  most_recent = true
+  name_regex  = "^amzn2-ami-hvm-"
+  owners      = ["137112412989"]
+}
+{{< / highlight >}}
