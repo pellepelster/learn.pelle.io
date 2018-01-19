@@ -93,9 +93,9 @@ function insert_files() {
         local include_tempfile="${TEMP_DIR}/$(basename ${include_filename}).include.tmp"
         local tempfile="${TEMP_DIR}/$(basename ${source_file}).tmp"
 
-        echo "{{% github href=\"${source_file}\" %}}$(basename ${include_filename}){{% /github %}}" > ${include_tempfile}
+        echo "{{% github href=\"${include_filename}\" %}}$(basename ${include_filename}){{% /github %}}" > ${include_tempfile}
         echo "{{< highlight go \"linenos=table\" >}}" >> ${include_tempfile}
-        cat ${SOURCES_DIR}/${include_filename} >> ${include_tempfile}
+        cat ${ARTEFACTS_DIR}/${include_filename} >> ${include_tempfile}
         echo '{{< / highlight >}}' >> ${include_tempfile}
 
         awk "

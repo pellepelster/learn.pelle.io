@@ -5,7 +5,6 @@ weight: 30
 disableToc: true
 ---
 
-## Terraform
 We now have to choose which infrastructure as code software to use. When it comes to the sheer number of supported cloud providers [Terraform](https://www.terraform.io/) is the tool of our choiche. All major cloud providers contribute up-to-date plugins that abstract their apis into the text based declarative Terraform configuration language which is based on the text based [HashiCorp configuration language (HCL)](https://github.com/hashicorp/hcl).
 
 ## Initial Setup
@@ -14,9 +13,9 @@ First we have to tell Terraform which provider we are going to use, in our case 
 <!--snippet:deploy_aws_provider-->
 {{% github href="10_basic/30_deployment/deploy/providers.tf#L1-L3" %}}providers.tf{{% /github %}}
 {{< highlight go "linenos=table,linenostart=1,hl_lines=" >}}
-provider "aws" {
+provider "aws" { 
   region = "eu-central-1"
-}
+} 
 {{< / highlight >}}
 <!--eos:deploy_aws_provider-->
 

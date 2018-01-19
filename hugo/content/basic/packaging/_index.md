@@ -28,17 +28,17 @@ The Gradle wrapper bootstraps the Gradle environment needed for the build and re
 
 In a multi project we need a file `settings.gradle` which tells Gradle what subprojects are part of the build:
 
-<!--file:todo_project/settings.gradle-->
-{{% github href="hugo/content/basic/packaging/_index.md" %}}settings.gradle{{% /github %}}
+<!--file:10_basic/20_packaging/settings.gradle-->
+{{% github href="10_basic/20_packaging/settings.gradle" %}}settings.gradle{{% /github %}}
 {{< highlight go "linenos=table" >}}
 include 'todo-server', 'todo-frontend'
 {{< / highlight >}}
-<!--eof:todo_project/settings.gradle-->
+<!--eof:10_basic/20_packaging/settings.gradle-->
 
 Additionaly we create a `build.gradle` to define everything that is common for all submodules of the build:
 
-<!--file:todo_project/build.gradle-->
-{{% github href="hugo/content/basic/packaging/_index.md" %}}build.gradle{{% /github %}}
+<!--file:10_basic/20_packaging/build.gradle-->
+{{% github href="10_basic/20_packaging/build.gradle" %}}build.gradle{{% /github %}}
 {{< highlight go "linenos=table" >}}
 allprojects {
 
@@ -52,7 +52,7 @@ allprojects {
     group = "io.pelle"
 }
 {{< / highlight >}}
-<!--eof:todo_project/build.gradle-->
+<!--eof:10_basic/20_packaging/build.gradle-->
 
 
 ### Package the frontend
@@ -142,8 +142,8 @@ As the backend is already built with Gradle we only need some minor modification
 
 Now that the static `frontend.jar` is packaged in our application we only have to tell Spring Boot to serve this files:
 
-<!--file:todo_project/todo-server/src/main/java/io/pelle/todo/FrontendContent.java-->
-{{% github href="hugo/content/basic/packaging/_index.md" %}}FrontendContent.java{{% /github %}}
+<!--file:10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/FrontendContent.java-->
+{{% github href="10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/FrontendContent.java" %}}FrontendContent.java{{% /github %}}
 {{< highlight go "linenos=table" >}}
 package io.pelle.todo;
 
@@ -163,4 +163,3 @@ class FrontendContent extends WebMvcConfigurerAdapter {
   }
 }
 {{< / highlight >}}
-<!--eof:todo_project/todo-server/src/main/java/io/pelle/todo/FrontendContent.java-->
