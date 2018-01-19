@@ -62,7 +62,7 @@ As already mentioned it is vitally important for the build not to rely on any lo
 <!--snippet:frontend_nodejs_plugin_dependency-->
 {{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L1-L9" %}}build.gradle{{% /github %}}
 {{< highlight go "linenos=table,linenostart=1,hl_lines=" >}}
-buildscript { 
+buildscript {
 	repositories {
 		maven {
 			url "https://plugins.gradle.org/m2/"
@@ -84,35 +84,35 @@ The plugin can be configured to a specific node.js/npm version:
 <!--snippet:frontend_nodejs_plugin_configuration-->
 {{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L16-L22" %}}build.gradle{{% /github %}}
 {{< highlight go "linenos=table,linenostart=16,hl_lines=" >}}
-node { 
+node {
   version = '6.3.1'
   npmVersion = '4.0.1'
   distBaseUrl = 'https://nodejs.org/dist'
   download = true
   workDir = file("${project.buildDir}/nodejs")
-} 
+}
 {{< / highlight >}}
 <!--eos:frontend_nodejs_plugin_configuration-->
 
 Now we create a new task that executes the npm build:
 
 <!--snippet:frontend_nodejs_build-->
-{{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L24-L28" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/30_deployment/todo-server/build.gradle#L24-L28" %}}build.gradle{{% /github %}}
 {{< highlight go "linenos=table,linenostart=24,hl_lines=" >}}
-task frontendBuild(type: NpmTask) { 
+task frontendBuild(type: NpmTask) {
 	args = [ 'run', 'build' ]
 }
 
-frontendBuild.dependsOn('npmInstall') 
+frontendBuild.dependsOn('npmInstall')
 {{< / highlight >}}
 <!--eos:frontend_nodejs_build-->
 
 and package the resulting file in a jar file:
 
 <!--snippet:frontend_nodejs_jar-->
-{{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L30-L37" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/30_deployment/todo-server/build.gradle#L30-L37" %}}build.gradle{{% /github %}}
 {{< highlight go "linenos=table,linenostart=30,hl_lines=" >}}
- task frontendJar(type: Jar) { 
+ task frontendJar(type: Jar) {
  	appendix = 'frontend'
  	into 'frontend'
  	from fileTree('./dist/')
@@ -126,21 +126,33 @@ frontendJar.dependsOn('frontendBuild')
 The last step is to add the resulting jar to a [Gradle configuration named](https://docs.gradle.org/current/userguide/dependency_management.html#sub:configurations) `frontend` so dependent projects (in our case the frontend-server project) can include the frontend artifacts in their build cycle:
 
 <!--snippet:frontend_nodejs_gradle_config-->
-{{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L39-L40" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/30_deployment/todo-server/build.gradle#L39-L40" %}}build.gradle{{% /github %}}
 {{< highlight go "linenos=table,linenostart=39,hl_lines=" >}}
 configurations { frontend }
-artifacts { frontend frontendJar } 
+artifacts { frontend frontendJar }
 {{< / highlight >}}
 <!--eos:frontend_nodejs_gradle_config-->
 
 ### Package the backend
-
-As the backend is already built with Gradle we only need some minor modifications. The `spring-boot-gradle-plugin` we are using already provides a task that creates a fat jar file containing all dependencies needed to run the application. To also  serve that static files for the frontend we need to add a dependency to to frontend build we just created:
+As the backend is already built with Gradle we only need some minor modifications. The `spring-boot-gradle-plugin` we are using already provides a task that creates a fat jar file containing all dependencies needed to run the application. To also serve that static files for the frontend we need to add a dependency to to frontend build we just created:
 
 <!--snippet:frontend_backend_dependency-->
+{{% github href="10_basic/30_deployment/todo-server/build.gradle#L22-L31" %}}build.gradle{{% /github %}}
+{{< highlight go "linenos=table,linenostart=22,hl_lines=" >}}
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-web')
+    testCompile('org.springframework.boot:spring-boot-test')
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("com.jayway.jsonpath:json-path:2.2.0")
+    testCompile("com.jayway.jsonpath:json-path-assert:2.2.0")
+    testCompile('org.springframework:spring-test')
+    testCompile('junit:junit')
+    runtime project(path: ':todo-frontend', configuration: 'frontend')
+}
+{{< / highlight >}}
 <!--eos:frontend_backend_dependency-->
 
-Now that the static `frontend.jar` is packaged in our application we only have to tell Spring Boot to serve this files:
+Now that the static `frontend.jar` is packaged in our application we only have to tell Spring Boot to serve this files by adding a `ResourceHandler` that matches all HTTP request and tries to serve them with the static files from the `frontend-jar` we just added as a dependency:
 
 <!--file:10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/FrontendContent.java-->
 {{% github href="10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/FrontendContent.java" %}}FrontendContent.java{{% /github %}}
@@ -163,3 +175,15 @@ class FrontendContent extends WebMvcConfigurerAdapter {
   }
 }
 {{< / highlight >}}
+<!--eof:10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/FrontendContent.java-->
+
+As a finishing touch we set the `executable` attribute of the Spring Boot gradle plugin to `true` makes the JAR file directly executable by adding a start script in front of the JAR file. 
+
+<!--snippet:backend_executable-->
+{{% github href="10_basic/30_deployment/todo-server/build.gradle#L13-L15" %}}build.gradle{{% /github %}}
+{{< highlight go "linenos=table,linenostart=13,hl_lines=" >}}
+springBoot {
+    executable = true
+}
+{{< / highlight >}}
+<!--eos:backend_executable-->

@@ -47,7 +47,7 @@ resource "aws_security_group" "todo_instance_http_security_group" {
   }
 }
 
-data "template_file" "todo_systemd_service" {
+data "template_file" "todo_systemd_service" { //snippet:deploy_aws_instance
   template = "${file("todo.service.tpl")}"
 
   vars {
@@ -97,7 +97,7 @@ resource "aws_instance" "todo_instance" {
       user = "ec2-user"
     }
   }
-}
+} //eos:deploy_aws_instance
 
 output "instance_fqdn" {
   value = "${aws_instance.todo_instance.public_dns}"
