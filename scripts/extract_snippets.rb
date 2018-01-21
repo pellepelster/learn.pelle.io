@@ -22,13 +22,13 @@ ARGV.each do|filename|
       exit
     end
 
-    start = snippet[:start]
-    length = snippet[:end] - snippet[:start] + 1
+    start = snippet[:start] + 1
+    length = snippet[:end] - snippet[:start] - 1
     snippet_content = lines[start, length].collect {|line| line[:content] }.join('')
 
     open(snippet_filename, 'w') { |file|
-      line_start = lines[snippet[:start]][:number]
-      line_end = lines[snippet[:end]][:number]
+      line_start = lines[snippet[:start] + 1][:number]
+      line_end = lines[snippet[:end] -1][:number]
       file.puts "{{% github href=\"#{filename}#L#{line_start}-L#{line_end}\" %}}#{filename}{{% /github %}}"
       file.puts "{{< highlight go \"linenos=table,linenostart=#{line_start},hl_lines=\" >}}"
       file.puts snippet_content
