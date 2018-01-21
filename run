@@ -71,7 +71,7 @@ function generate_and_insert_snippets() {
 function task_generate {
   ensure_environment
 
-  #insert_files ${content_dir}
+  # insert_files ${content_dir}
 
   echo "running steps runfiles for '${STEPS_DIR}'"
   local last_step_dir=''
@@ -87,6 +87,15 @@ function task_generate {
   done
 
   generate_and_insert_snippets
+
+  (
+    cd ${ARTEFACTS_DIR}
+    for source_file in $(git ls-tree -r master --name-only .); do
+      echo "cleaning file ${source_file}"
+      sed -i '/snippet:/d' ${source_file}
+    done
+  )
+
 }
 
 

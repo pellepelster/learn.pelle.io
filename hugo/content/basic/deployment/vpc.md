@@ -15,7 +15,7 @@ In AWS terms this would be a [VPC](https://docs.aws.amazon.com/AmazonVPC/latest/
 Lets start with the VPC definition, we pick a private non-routed ip subnet from [RFC1918](https://tools.ietf.org/html/rfc1918) to avoid interference with any other public networks.
 
 <!-- snippet:deploy_aws_vpc -->
-{{% github href="10_basic/30_deployment/deploy/vpc.tf#L1-L4" %}}10_basic/30_deployment/deploy/vpc.tf{{% /github %}}
+{{% github href="10_basic/30_deployment/deploy/vpc.tf#L1-L4" %}}vpc.tf{{% /github %}}
 {{< highlight go "linenos=table,linenostart=1,hl_lines=" >}}
 resource "aws_vpc" "todo_vpc" {
   cidr_block           = "10.0.0.0/16"
@@ -28,7 +28,7 @@ Now we assign a public subnet to our VPC, this is where the servers we are about
 Of course those private networks are not available from outside AWS so we configure `map_public_ip_on_launch` to `true` which means that a publicly reachable ip address gets assigned to all new instances that are launched ins this subnet.
 
 <!-- snippet:deploy_aws_public_subnet -->
-{{% github href="10_basic/30_deployment/deploy/vpc.tf#L6-L11" %}}10_basic/30_deployment/deploy/vpc.tf{{% /github %}}
+{{% github href="10_basic/30_deployment/deploy/vpc.tf#L6-L11" %}}vpc.tf{{% /github %}}
 {{< highlight go "linenos=table,linenostart=6,hl_lines=" >}}
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = "${aws_vpc.todo_vpc.id}"
@@ -43,7 +43,7 @@ resource "aws_subnet" "public_subnet" {
 The last thing we need to enable connectivity for instances is an [internet gateway](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Internet_Gateway.html) that enables access to the internet via natting to instances with an public ip address. Like in the real world we simply add a default route pointing to this gateway so all instances in our VPC know how to reach addresses outside of the VPC.
 
 <!-- snippet:deploy_aws_routing -->
-{{% github href="10_basic/30_deployment/deploy/vpc.tf#L13-L29" %}}10_basic/30_deployment/deploy/vpc.tf{{% /github %}}
+{{% github href="10_basic/30_deployment/deploy/vpc.tf#L13-L29" %}}vpc.tf{{% /github %}}
 {{< highlight go "linenos=table,linenostart=13,hl_lines=" >}}
 resource "aws_internet_gateway" "todo_internet_gateway" {
   vpc_id = "${aws_vpc.todo_vpc.id}"

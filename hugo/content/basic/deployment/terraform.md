@@ -11,7 +11,7 @@ We now have to choose which infrastructure as code software to use. When it come
 First we have to tell Terraform which provider we are going to use, in our case the AWS provider using `eu-central-1` as the default region for alle created resources:
 
 <!-- snippet:deploy_aws_provider -->
-{{% github href="10_basic/30_deployment/deploy/providers.tf#L1-L3" %}}10_basic/30_deployment/deploy/providers.tf{{% /github %}}
+{{% github href="10_basic/30_deployment/deploy/providers.tf#L1-L3" %}}providers.tf{{% /github %}}
 {{< highlight go "linenos=table,linenostart=1,hl_lines=" >}}
 provider "aws" {
   region = "eu-central-1"
