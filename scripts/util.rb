@@ -46,11 +46,12 @@ def extract_snippets(lines)
       snippets[line_info[:snippet_id]] = snippet
     end
 
-
     if (line_info[:snippet_end])
       if !snippets[line_info[:snippet_id]]
         puts "no snippet start found for '#{line_info[:snippet_id]}'"
       end
+      p snippets[line_info[:snippet_id]]
+
       snippets[line_info[:snippet_id]][:end] = index
     end
   end
