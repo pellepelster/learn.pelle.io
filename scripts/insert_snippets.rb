@@ -10,9 +10,8 @@ ARGV.each do|filename|
 
   raw_lines = lines.collect {|line| line[:content] }
 
-  snippets.each do |snippet_id,snippet|
+  snippets.reverse_each do |snippet_id,snippet|
     snippet_filename = "#{TEMP_DIR}/snippet_#{snippet_id}"
-    # puts " snippet file '#{snippet_filename}'"
 
     if(!snippet[:start])
       puts "snippet '#{snippet_id}' has no start tag"
@@ -24,15 +23,17 @@ ARGV.each do|filename|
       exit
     end
 
-    start = snippet[:start]
-    length = snippet[:end] - snippet[:start] + 1
+    puts " inserting snippet file '#{snippet_filename}' into #{filename}"
 
-p snippet
-    # puts start
-    # puts length
-    #
-    # p raw_lines[start...length]
+    snippet_lines = []
+    File.readlines(snippet_filename).map do |line|
+      snippet_line = {}
+      snippet_line[:content] = line
+      snippet_lines.push(snippet_line)
+    end
+
+    lines[snippet[:start]+1...snippet[:end]]=snippet_lines
 
   end
-
+  #puts lines.collect {|line| line[:content] }.join('')
 end

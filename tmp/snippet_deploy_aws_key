@@ -1,7 +1,0 @@
-{{% github href="sources/steps/10_basic/30_deployment/deploy/todo.tf#L7-L10" %}}sources/steps/10_basic/30_deployment/deploy/todo.tf{{% /github %}}
-{{< highlight go "linenos=table,linenostart=7,hl_lines=" >}}
-resource "aws_key_pair" "todo_keypair" {
-  key_name   = "todo_keypair"
-  public_key = "${file("~/.ssh/id_rsa.pub")}"
-}
-{{< / highlight >}}

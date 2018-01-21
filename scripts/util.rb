@@ -1,9 +1,9 @@
 def has_snippet_start_marker(line)
-  line.match?(/[^\/]snippet:(\S*)/)
+  line.valid_encoding? && line.match?(/[^\/]snippet:(\S*)/)
 end
 
 def has_snippet_end_marker(line)
-  line.match?(/\/snippet:(\S*)/)
+  line.valid_encoding? && line.match?(/\/snippet:(\S*)/)
 end
 
 def extract_snippet_id(line)
@@ -46,7 +46,11 @@ def extract_snippets(lines)
       snippets[line_info[:snippet_id]] = snippet
     end
 
+
     if (line_info[:snippet_end])
+      if !snippets[line_info[:snippet_id]]
+        puts "no snippet start found for '#{line_info[:snippet_id]}'"
+      end
       snippets[line_info[:snippet_id]][:end] = index
     end
   end

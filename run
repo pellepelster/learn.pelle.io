@@ -50,13 +50,13 @@ function insert_files() {
 
 function generate_and_insert_snippets() {
 
-  # echo "generating snippets for '${ARTEFACTS_DIR}'"
-  # (
-  #   cd ${ARTEFACTS_DIR}
-  #   for file in $(git ls-tree -r master --name-only .); do
-  #     TEMP_DIR=${TEMP_DIR} bundle exec ruby ${DIR}/scripts/extract_snippets.rb ${file}
-  #   done
-  # )
+  echo "generating snippets for '${ARTEFACTS_DIR}'"
+  (
+    cd ${ARTEFACTS_DIR}
+    for file in $(git ls-tree -r master --name-only .); do
+      TEMP_DIR=${TEMP_DIR} bundle exec ruby ${DIR}/scripts/extract_snippets.rb ${file}
+    done
+  )
 
   echo "inserting snippets for '${HUGO_DIR}/content'"
   (
@@ -65,7 +65,6 @@ function generate_and_insert_snippets() {
       TEMP_DIR=${TEMP_DIR} bundle exec ruby ${DIR}/scripts/insert_snippets.rb ${file}
     done
   )
-
 
 }
 
