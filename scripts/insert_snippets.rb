@@ -15,12 +15,12 @@ ARGV.each do|filename|
 
     if(!snippet[:start])
       puts "snippet '#{snippet_id}' has no start tag"
-      exit
+      next
     end
 
     if(!snippet[:end])
       puts "snippet '#{snippet_id}' has no end tag"
-      exit
+      next
     end
 
     puts " inserting snippet file '#{snippet_filename}' into #{filename}"
@@ -35,5 +35,9 @@ ARGV.each do|filename|
     lines[snippet[:start]+1...snippet[:end]]=snippet_lines
 
   end
-  #puts lines.collect {|line| line[:content] }.join('')
+
+  content = lines.collect {|line| line[:content] }.join('')
+  puts content
+  File.write(filename, content)
+
 end
