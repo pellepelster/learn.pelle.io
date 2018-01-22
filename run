@@ -11,43 +11,6 @@ SOURCES_DIR="${DIR}/sources"
 STEPS_DIR="${SOURCES_DIR}/steps"
 TODO_PROJECT_DIR="${SOURCES_DIR}/todo_project"
 
-function insert_files() {
-  local content_dir=${1:-}
-
-  echo "looking for file includes in '${content_dir}'"
-  for source_file in $(git ls-tree -r master --name-only ${content_dir}); do
-    if $(grep --quiet "<!--file:.*-->" ${source_file}); then
-      echo "found includes in file '${source_file}'"
-
-      for include_filename in $(cat ${source_file} | grep -oP '(?<=\<!--file:)(.*)(?=-->)'); do
-        echo "inserting file '${include_filename}' into '${source_file}'"
-
-        local starttag="<!--file:${include_filename//\//\\/}-->"
-        local endtag="<!--eof:${include_filename//\//\\/}-->"
-
-        local include_tempfile="${TEMP_DIR}/$(basename ${include_filename}).include.tmp"
-        local tempfile="${TEMP_DIR}/$(basename ${source_file}).tmp"
-
-        echo "{{% github href=\"${include_filename}\" %}}$(basename ${include_filename}){{% /github %}}" > ${include_tempfile}
-        echo "{{< highlight go \"linenos=table\" >}}" >> ${include_tempfile}
-        cat ${ARTEFACTS_DIR}/${include_filename} >> ${include_tempfile}
-        echo '{{< / highlight >}}' >> ${include_tempfile}
-
-        awk "
-            BEGIN       {p=1}
-            /^${starttag}/   {print;system(\"cat ${include_tempfile}\");p=0}
-            /^${endtag}/     {p=1}
-            p" ${source_file} > ${tempfile}
-        # cat ${tempfile}
-        cp ${tempfile} ${source_file}
-      done
-
-    else
-      echo "no include found in file '${source_file}'"
-    fi
-  done
-}
-
 function generate_and_insert_snippets() {
 
   echo "generating snippets for '${ARTEFACTS_DIR}'"
@@ -62,7 +25,7 @@ function generate_and_insert_snippets() {
   (
     cd ${HUGO_DIR}/content
     for file in $(git ls-tree -r master --name-only .); do
-      TEMP_DIR=${TEMP_DIR} bundle exec ruby ${DIR}/scripts/insert_snippets.rb ${file}
+      ARTEFACTS_DIR=${ARTEFACTS_DIR} TEMP_DIR=${TEMP_DIR} bundle exec ruby ${DIR}/scripts/insert_snippets.rb ${file}
     done
   )
 
@@ -70,8 +33,6 @@ function generate_and_insert_snippets() {
 
 function task_generate {
   ensure_environment
-
-  # insert_files ${content_dir}
 
   echo "running steps runfiles for '${STEPS_DIR}'"
   local last_step_dir=''

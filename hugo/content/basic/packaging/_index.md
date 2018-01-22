@@ -28,18 +28,18 @@ The Gradle wrapper bootstraps the Gradle environment needed for the build and re
 
 In a multi project we need a file `settings.gradle` which tells Gradle what subprojects are part of the build:
 
-<!--file:10_basic/20_packaging/settings.gradle-->
-{{% github href="10_basic/20_packaging/settings.gradle" %}}settings.gradle{{% /github %}}
-{{< highlight go "linenos=table" >}}
+<!-- file:10_basic/20_packaging/settings.gradle -->
+{{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/20_packaging/settings.gradle" %}}settings.gradle{{% /github %}}
+{{< highlight go "linenos=table,linenostart=,hl_lines=" >}}
 include 'todo-server', 'todo-frontend'
 {{< / highlight >}}
-<!--eof:10_basic/20_packaging/settings.gradle-->
+<!-- /file:10_basic/20_packaging/settings.gradle -->
 
 Additionaly we create a `build.gradle` to define everything that is common for all submodules of the build:
 
-<!--file:10_basic/20_packaging/build.gradle-->
-{{% github href="10_basic/20_packaging/build.gradle" %}}build.gradle{{% /github %}}
-{{< highlight go "linenos=table" >}}
+<!-- file:10_basic/20_packaging/build.gradle -->
+{{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/20_packaging/build.gradle" %}}build.gradle{{% /github %}}
+{{< highlight go "linenos=table,linenostart=,hl_lines=" >}}
 allprojects {
 
     repositories {
@@ -52,11 +52,10 @@ allprojects {
     group = "io.pelle"
 }
 {{< / highlight >}}
-<!--eof:10_basic/20_packaging/build.gradle-->
+<!-- /file:10_basic/20_packaging/build.gradle -->
 
 
 ### Package the frontend
-
 As already mentioned it is vitally important for the build not to rely on any local prerequistes on the machine that executes the build. Keep in mind that the build has to work on your machine, your coworkers machine or in a continus integration environment. Luckily for us a [node.js plugin](https://github.com/srs/gradle-node-plugin) for Gradle already exists that creates a node.js environment for us, we just have to apply the plugin from the public Gradle maven repository:
 
 <!-- snippet:frontend_nodejs_plugin_dependency -->
@@ -132,7 +131,7 @@ As the backend is already built with Gradle we only need some minor modification
 
 <!-- snippet:frontend_backend_dependency -->
 {{% github href="10_basic/30_deployment/todo-server/build.gradle#L22-L31" %}}build.gradle{{% /github %}}
-{{< highlight go "linenos=table,linenostart=22,hl_lines=" >}}
+{{< highlight java "linenos=table,linenostart=22,hl_lines=" >}}
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
     testCompile('org.springframework.boot:spring-boot-test')
@@ -148,9 +147,9 @@ dependencies {
 
 Now that the static `frontend.jar` is packaged in our application we only have to tell Spring Boot to serve this files by adding a `ResourceHandler` that matches all HTTP request and tries to serve them with the static files from the `frontend-jar` we just added as a dependency:
 
-<!--file:10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/FrontendContent.java-->
-{{% github href="10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/FrontendContent.java" %}}FrontendContent.java{{% /github %}}
-{{< highlight go "linenos=table" >}}
+<!-- file:10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/FrontendContent.java -->
+{{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/FrontendContent.java" %}}FrontendContent.java{{% /github %}}
+{{< highlight go "linenos=table,linenostart=,hl_lines=" >}}
 package io.pelle.todo;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -169,7 +168,7 @@ class FrontendContent extends WebMvcConfigurerAdapter {
   }
 }
 {{< / highlight >}}
-<!--eof:10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/FrontendContent.java-->
+<!-- /file:10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/FrontendContent.java -->
 
 As a finishing touch we set the `executable` attribute of the Spring Boot gradle plugin to `true` makes the JAR file directly executable by adding a start script in front of the JAR file.
 
