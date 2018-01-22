@@ -23,15 +23,7 @@ ARGV.each do|filename|
     end
 
     puts "inserting snippet file '#{snippet_filename}' into #{filename}"
-    snippet_lines = []
-    File.readlines(snippet_filename).map do |line|
-      snippet_line = {}
-      snippet_line[:content] = line
-      snippet_lines.push(snippet_line)
-    end
-
-    lines[snippet[:start]+1...snippet[:end]]=snippet_lines
-
+    lines[snippet[:start]+1...snippet[:end]]=read_lines(snippet_filename)
   end
 
   content = lines.collect {|line| line[:content] }.join('')
@@ -56,15 +48,11 @@ ARGV.each do|filename|
     end
 
     puts "inserting file '#{insert_filename}' into #{filename}"
-    file_lines = []
+
+    file_lines=[]
     file_lines.push({ content: "{{% github href=\"#{insert_filename}\" %}}#{File.basename insert_filename}{{% /github %}}\n" })
     file_lines.push({ content: "{{< highlight go \"linenos=table,linenostart=,hl_lines=\" >}}\n" })
-
-    File.readlines(insert_filename).map do |line|
-      file_line = {}
-      file_line[:content] = line
-      file_lines.push(file_line)
-    end
+    file_lines.push(*read_lines(insert_filename))
     file_lines.push({ content: "{{< / highlight >}}\n" })
 
     lines[file[:start]+1...file[:end]]=file_lines
@@ -72,5 +60,4 @@ ARGV.each do|filename|
 
   content = lines.collect {|line| line[:content] }.join('')
   File.write(filename, content)
-
 end

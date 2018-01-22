@@ -39,25 +39,15 @@ resource "aws_key_pair" "todo_keypair" {
 
 ## Application Instance
 Now we have finally reached the point where we are able to launch and EC2 instance and provision it with our application. For `ami`, `subnet_id` and `key_name` we use the already created resources and reference them with their id. As `instance_type` we start with `t2.micro` which translates to a single core machine with 1Gb of memory. Have a look [here](https://aws.amazon.com/ec2/instance-types/) for a complete list of available instance types.
-Terraform comes with various provisioners that can be used to configure instances. We will use the `file` provisioner to copy local files to the remote machine, and the `remote-exec` provisioner to execute the commands needed to install the application on the instance.
+
+Terraform comes with various provisioners that can be used to configure instances. We will use the `file` provisioner to copy local files to the remote machine, and the `remote-exec` provisioner to execute the commands needed to install the application on the instance. By default the provisioners use SSH as backend, therefore we have to specify the remote user user which is `ec2-user` by default for all Amazon Linux based instances.
 
 <!-- snippet:deploy_aws_instance -->
-{{% github href="10_basic/30_deployment/deploy/todo.tf#L50-L100" %}}todo.tf{{% /github %}}
-{{< highlight go "linenos=table,linenostart=50,hl_lines=" >}}
-data "template_file" "todo_systemd_service" {
-  template = "${file("todo.service.tpl")}"
-
-  vars {
-    application_jar = "${var.application_jar}"
-  }
-}
-
+{{% github href="10_basic/30_deployment/deploy/todo.tf#L65-L72" %}}todo.tf{{% /github %}}
+{{< highlight go "linenos=table,linenostart=65,hl_lines=" >}}
 resource "aws_instance" "todo_instance" {
-  ami             = "${data.aws_ami.amazon_linux2_ami.id}"
-  subnet_id       = "${aws_subnet.public_subnet.id}"
-  instance_type   = "t2.micro"
-  key_name        = "${aws_key_pair.todo_keypair.id}"
-  security_groups = ["${aws_security_group.todo_instance_ssh_security_group.id}", "${aws_security_group.todo_instance_http_security_group.id}"]
+
+ [..]
 
   provisioner "file" {
     content     = "${data.template_file.todo_systemd_service.rendered}"
@@ -68,32 +58,8 @@ resource "aws_instance" "todo_instance" {
     }
   }
 
-  provisioner "file" {
-    source      = "../todo-server/build/libs/${var.application_jar}"
-    destination = "${var.application_jar}"
+ [..]
 
-    connection {
-      user = "ec2-user"
-    }
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo yum install -y java",
-      "sudo useradd todo",
-      "sudo mkdir /todo",
-      "sudo mv ~ec2-user/todo.service /etc/systemd/system/",
-      "sudo mv ~ec2-user/${var.application_jar} /todo",
-      "sudo chmod +x /todo/${var.application_jar}",
-      "sudo chown -R todo:todo /todo",
-      "sudo systemctl enable todo",
-      "sudo systemctl start todo",
-    ]
-
-    connection {
-      user = "ec2-user"
-    }
-  }
 }
 {{< / highlight >}}
 <!-- /snippet:deploy_aws_instance -->

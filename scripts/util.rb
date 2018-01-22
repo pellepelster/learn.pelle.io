@@ -6,6 +6,20 @@ def has_file_start_marker(line)
   line.valid_encoding? && line.match?(/<!-- file:(\S*) -->/)
 end
 
+def is_empty(line)
+  line.valid_encoding? && line.gsub(/\s+/, "").size == 0
+end
+
+def has_indention(line)
+  line.valid_encoding? && !is_empty(line) && line.match?(/^(\s)/)
+end
+
+def get_indention(line)
+  if match = line.match(/^(\s)/)
+    match.captures[0]
+  end
+end
+
 def has_file_end_marker(line)
   line.valid_encoding? && line.match?(/<!-- \/file:(\S*) -->/)
 end
@@ -29,9 +43,11 @@ end
 def create_lines(file)
   lines = []
   line_number = 1
-  File.readlines(file).each do |line|
+
+  lines = File.readlines(file).map do |line|
     line_info = {}
     line_info[:content] = line
+    line_info[:empty] = is_empty(line)
 
     if (has_snippet_start_marker(line))
       line_info[:snippet_start] = true
@@ -50,7 +66,14 @@ def create_lines(file)
       line_number += 1
     end
 
-    lines.push(line_info)
+    if has_indention(line)
+      line_info[:indented] = true
+      line_info[:indention] = get_indention(line)
+    else
+      line_info[:indented] = false
+    end
+
+    line_info
   end
 
   lines
@@ -98,4 +121,11 @@ def extract_files(lines)
   end
 
   files
+end
+
+
+def read_lines(filename)
+  File.readlines(filename).map do |line|
+    { :content => line }
+  end
 end

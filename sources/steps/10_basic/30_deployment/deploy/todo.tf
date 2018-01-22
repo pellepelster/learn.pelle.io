@@ -51,7 +51,6 @@ resource "aws_security_group" "todo_instance_http_security_group" {
   }
 }
 
-# snippet:deploy_aws_instance
 data "template_file" "todo_systemd_service" {
   template = "${file("todo.service.tpl")}"
 
@@ -67,6 +66,7 @@ resource "aws_instance" "todo_instance" {
   key_name        = "${aws_key_pair.todo_keypair.id}"
   security_groups = ["${aws_security_group.todo_instance_ssh_security_group.id}", "${aws_security_group.todo_instance_http_security_group.id}"]
 
+  # snippet:deploy_aws_instance
   provisioner "file" {
     content     = "${data.template_file.todo_systemd_service.rendered}"
     destination = "todo.service"
@@ -75,6 +75,7 @@ resource "aws_instance" "todo_instance" {
       user = "ec2-user"
     }
   }
+  # /snippet:deploy_aws_instance
 
   provisioner "file" {
     source      = "../todo-server/build/libs/${var.application_jar}"
@@ -103,7 +104,6 @@ resource "aws_instance" "todo_instance" {
     }
   }
 }
-# /snippet:deploy_aws_instance
 
 output "instance_fqdn" {
   value = "${aws_instance.todo_instance.public_dns}"

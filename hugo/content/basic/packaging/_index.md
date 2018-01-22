@@ -110,6 +110,16 @@ and package the resulting file in a jar file:
 <!-- snippet:frontend_nodejs_jar -->
 {{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L29-L36" %}}build.gradle{{% /github %}}
 {{< highlight go "linenos=table,linenostart=29,hl_lines=" >}}
+// snippet:frontend_nodejs_jar
+{{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L29-L36" %}}build.gradle{{% /github %}}
+{{< highlight go "linenos=table,linenostart=29,hl_lines=" >}}
+// snippet:frontend_nodejs_jar
+{{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L29-L36" %}}build.gradle{{% /github %}}
+{{< highlight go "linenos=table,linenostart=29,hl_lines=" >}}
+// snippet:frontend_nodejs_jar
+
+ [..]
+
  task frontendJar(type: Jar) {
  	appendix = 'frontend'
  	into 'frontend'
@@ -118,6 +128,10 @@ and package the resulting file in a jar file:
 }
 
 frontendJar.dependsOn('frontendBuild')
+
+ [..]
+
+}
 {{< / highlight >}}
 <!-- /snippet:frontend_nodejs_jar -->
 
@@ -131,7 +145,7 @@ As the backend is already built with Gradle we only need some minor modification
 
 <!-- snippet:frontend_backend_dependency -->
 {{% github href="10_basic/30_deployment/todo-server/build.gradle#L22-L31" %}}build.gradle{{% /github %}}
-{{< highlight java "linenos=table,linenostart=22,hl_lines=" >}}
+{{< highlight go "linenos=table,linenostart=22,hl_lines=" >}}
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
     testCompile('org.springframework.boot:spring-boot-test')
