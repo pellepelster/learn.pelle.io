@@ -10,3 +10,4 @@ home = [ "HTML", "RSS", "JSON"]
 
 [params]
 themeVariant = "green"
+disableInlineCopyToClipBoard = true

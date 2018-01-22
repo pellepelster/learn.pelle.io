@@ -4,6 +4,14 @@
   float: right;
 }
 
+code.attribute {
+  background: #CBE896;
+}
+
+code.file {
+  background: #F4B886;
+}
+
 /* Table of contents */
 
 .progress ul {
