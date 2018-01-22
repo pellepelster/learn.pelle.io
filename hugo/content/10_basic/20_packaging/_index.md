@@ -114,9 +114,6 @@ and package the resulting file in a jar file:
 {{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L29-L36" %}}build.gradle{{% /github %}}
 {{< highlight go "linenos=table,linenostart=29,hl_lines=" >}}
 // snippet:frontend_nodejs_jar
-{{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L29-L36" %}}build.gradle{{% /github %}}
-{{< highlight go "linenos=table,linenostart=29,hl_lines=" >}}
-// snippet:frontend_nodejs_jar
 
  [..]
 

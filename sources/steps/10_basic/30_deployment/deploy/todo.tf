@@ -51,6 +51,7 @@ resource "aws_security_group" "todo_instance_http_security_group" {
   }
 }
 
+# snippet:deploy_aws_instance_systemd_unit
 data "template_file" "todo_systemd_service" {
   template = "${file("todo.service.tpl")}"
 
@@ -58,6 +59,7 @@ data "template_file" "todo_systemd_service" {
     application_jar = "${var.application_jar}"
   }
 }
+# /snippet:deploy_aws_instance_systemd_unit
 
 resource "aws_instance" "todo_instance" {
 
@@ -69,17 +71,6 @@ resource "aws_instance" "todo_instance" {
   security_groups = ["${aws_security_group.todo_instance_ssh_security_group.id}", "${aws_security_group.todo_instance_http_security_group.id}"]
   # /snippet:deploy_aws_instance
 
-  # snippet:deploy_aws_instance_systemd
-  provisioner "file" {
-    content     = "${data.template_file.todo_systemd_service.rendered}"
-    destination = "todo.service"
-
-    connection {
-      user = "ec2-user"
-    }
-  }
-  # /snippet:deploy_aws_instance_systemd
-
   # snippet:deploy_aws_instance_jar
   provisioner "file" {
     source      = "../todo-server/build/libs/${var.application_jar}"
@@ -90,6 +81,17 @@ resource "aws_instance" "todo_instance" {
     }
   }
   # /snippet:deploy_aws_instance_jar
+
+  # snippet:deploy_aws_instance_systemd
+  provisioner "file" {
+    content     = "${data.template_file.todo_systemd_service.rendered}"
+    destination = "todo.service"
+
+    connection {
+      user = "ec2-user"
+    }
+  }
+  # /snippet:deploy_aws_instance_systemd
 
   # snippet:deploy_aws_instance_install
   provisioner "remote-exec" {

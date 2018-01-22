@@ -40,11 +40,102 @@ resource "aws_key_pair" "todo_keypair" {
 ## Application Instance
 Now we have finally reached the point where we are able to launch and EC2 instance and provision it with our application. For `ami`, `subnet_id` and `key_name` we use the already created resources and reference them with their id. As `instance_type` we start with `t2.micro` which translates to a single core machine with 1Gb of memory. Have a look [here](https://aws.amazon.com/ec2/instance-types/) for a complete list of available instance types.
 
+<!-- snippet:deploy_aws_instance -->
+{{% github href="10_basic/30_deployment/deploy/todo.tf#L60-L64" %}}todo.tf{{% /github %}}
+{{< highlight go "linenos=table,linenostart=60,hl_lines=" >}}
+resource "aws_instance" "todo_instance" {
+
+ [..]
+
+  ami             = "${data.aws_ami.amazon_linux2_ami.id}"
+  subnet_id       = "${aws_subnet.public_subnet.id}"
+  instance_type   = "t2.micro"
+  key_name        = "${aws_key_pair.todo_keypair.id}"
+  security_groups = ["${aws_security_group.todo_instance_ssh_security_group.id}", "${aws_security_group.todo_instance_http_security_group.id}"]
+
+ [..]
+
+}
+{{< / highlight >}}
+<!-- /snippet:deploy_aws_instance -->
+
 Terraform comes with various provisioners that can be used to configure instances. We will use the `file` provisioner to copy local files to the remote machine, and the `remote-exec` provisioner to execute the commands needed to install the application on the instance. By default the provisioners use SSH as backend, therefore we have to specify the remote user user which is `ec2-user` by default for all Amazon Linux based instances.
 
-<!-- snippet:deploy_aws_instance -->
-{{% github href="10_basic/30_deployment/deploy/todo.tf#L65-L72" %}}todo.tf{{% /github %}}
-{{< highlight go "linenos=table,linenostart=65,hl_lines=" >}}
+To avoid hard coding the path of the jar file (as it may change depending on build-version) we replace the source for the file provisioner with a variable that we have to define beforehand.
+
+<!-- snippet:deploy_aws_instance_var -->
+{{% github href="10_basic/30_deployment/deploy/variables.tf#L1-L3" %}}variables.tf{{% /github %}}
+{{< highlight go "linenos=table,linenostart=1,hl_lines=" >}}
+variable "application_jar" {
+  type = "string"
+}
+{{< / highlight >}}
+<!-- /snippet:deploy_aws_instance_var -->
+
+This variable can now be used with the usual interpolation syntax `var.$variable_name`.
+
+<!-- snippet:deploy_aws_instance_jar -->
+{{% github href="10_basic/30_deployment/deploy/todo.tf#L66-L73" %}}todo.tf{{% /github %}}
+{{< highlight go "linenos=table,linenostart=66,hl_lines=" >}}
+resource "aws_instance" "todo_instance" {
+
+ [..]
+
+  provisioner "file" {
+    source      = "../todo-server/build/libs/${var.application_jar}"
+    destination = "${var.application_jar}"
+
+    connection {
+      user = "ec2-user"
+    }
+  }
+
+ [..]
+
+}
+{{< / highlight >}}
+<!-- /snippet:deploy_aws_instance_jar -->
+
+As next step we upload a systemd unit to start and stop our application. Terraform comes with a templating system supporting all interpolations that are available in HCL. First we create the template file itself.
+
+<!-- file:10_basic/30_deployment/deploy/todo.service.tpl -->
+{{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/30_deployment/deploy/todo.service.tpl" %}}todo.service.tpl{{% /github %}}
+{{< highlight go "linenos=table,linenostart=,hl_lines=" >}}
+[Unit]
+Description=myapp
+After=syslog.target
+
+[Service]
+User=todo
+ExecStart=/todo/${var.application_jar}
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
+{{< / highlight >}}
+<!-- /file:10_basic/30_deployment/deploy/todo.service.tpl -->
+
+
+And now create the according template datasource. All variables that are used in the template have to be passed via the `vars` block. The template itself can either be given inline or read from a file using the `file` function.
+
+<!-- snippet:deploy_aws_instance_systemd_unit -->
+{{% github href="10_basic/30_deployment/deploy/todo.tf#L50-L56" %}}todo.tf{{% /github %}}
+{{< highlight go "linenos=table,linenostart=50,hl_lines=" >}}
+data "template_file" "todo_systemd_service" {
+  template = "${file("todo.service.tpl")}"
+
+  vars {
+    application_jar = "${var.application_jar}"
+  }
+}
+{{< / highlight >}}
+<!-- /snippet:deploy_aws_instance_systemd_unit -->
+
+Now we copy the processed template to the server instance. The rendered output can be accessed by the `.rendered` attribute of the template datasource.
+
+<!-- snippet:deploy_aws_instance_systemd -->
+{{% github href="10_basic/30_deployment/deploy/todo.tf#L75-L82" %}}todo.tf{{% /github %}}
+{{< highlight go "linenos=table,linenostart=75,hl_lines=" >}}
 resource "aws_instance" "todo_instance" {
 
  [..]
@@ -62,4 +153,42 @@ resource "aws_instance" "todo_instance" {
 
 }
 {{< / highlight >}}
-<!-- /snippet:deploy_aws_instance -->
+<!-- /snippet:deploy_aws_instance_systemd -->
+
+The last step now is to add java to the machine, create a user to run the application and install and enable the systemd unit.
+
+<!-- snippet:deploy_aws_instance_install -->
+{{% github href="10_basic/30_deployment/deploy/todo.tf#L84-L100" %}}todo.tf{{% /github %}}
+{{< highlight go "linenos=table,linenostart=84,hl_lines=" >}}
+resource "aws_instance" "todo_instance" {
+
+ [..]
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo yum install -y java",
+      "sudo useradd todo",
+      "sudo mkdir /todo",
+      "sudo mv ~ec2-user/todo.service /etc/systemd/system/",
+      "sudo mv ~ec2-user/${var.application_jar} /todo",
+      "sudo chmod +x /todo/${var.application_jar}",
+      "sudo chown -R todo:todo /todo",
+      "sudo systemctl enable todo",
+      "sudo systemctl start todo",
+    ]
+
+    connection {
+      user = "ec2-user"
+    }
+  }
+
+ [..]
+
+}
+{{< / highlight >}}
+<!-- /snippet:deploy_aws_instance_install -->
+
+
+```
+terraform plan -var 'application_jar=todo-0.1.0.jar'
+```
