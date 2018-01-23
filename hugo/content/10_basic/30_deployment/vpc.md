@@ -95,3 +95,7 @@ XXX insert apply output XXX
 Terraform now created an AWS VPC according to our configuration, when we log in into the AWS console we can see the VPC, the associated network and its routing configuration including the internet gateway.
 
 ![Screenshot](http://via.placeholder.com/800x600)
+
+{{% notice tip %}}
+It is a good habit to always do a `terraform plan` before executing a `terraform apply`. Working this way makes it easy to do quick sanity check and spot mistakes that would result in catastropic results when applied.  
+{{% /notice %}}

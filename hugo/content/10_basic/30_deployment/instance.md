@@ -96,7 +96,12 @@ resource "aws_instance" "todo_instance" {
 {{< / highlight >}}
 <!-- /snippet:deploy_aws_instance_jar -->
 
-As next step we upload a systemd unit to start and stop our application. Terraform comes with a templating system supporting all interpolations that are available in HCL. First we create the template file itself.
+Now that the application jar is uploaded we have to think how we start the application. We chose an Amazon Linux 2 based image for our instance that comes with [systemd](https://www.freedesktop.org/wiki/Software/systemd/) support by default that replaces the traditional way of starting services.
+
+> systemd is an init system used in Linux distributions to bootstrap the user space and to manage system processes after booting. It is a replacement for the UNIX System V and Berkeley Software Distribution init systems.
+
+Services (and any other resources that are managed by systemd) are called units and configured by unit files. The unit configuration tells systemd what program to start with which user context and also lets us define eventual dependencies on other services.
+So as next step we upload a systemd unit to start and stop our application. As the creation of configuration files is a common task when provisioning infrastrucute, terraform includes a templating system supporting all interpolations that are available in HCL. First we have to create the template file.
 
 <!-- file:10_basic/30_deployment/deploy/todo.service.tpl -->
 {{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/30_deployment/deploy/todo.service.tpl" %}}todo.service.tpl{{% /github %}}
@@ -115,8 +120,7 @@ WantedBy=multi-user.target
 {{< / highlight >}}
 <!-- /file:10_basic/30_deployment/deploy/todo.service.tpl -->
 
-
-And now create the according template datasource. All variables that are used in the template have to be passed via the `vars` block. The template itself can either be given inline or read from a file using the `file` function.
+And now create the according template datasource. All variables that are used in the template have to be passed via the `vars` block. The template itself can either be given inline or read from a file using the `file` function like in our case.
 
 <!-- snippet:deploy_aws_instance_systemd_unit -->
 {{% github href="10_basic/30_deployment/deploy/todo.tf#L50-L56" %}}todo.tf{{% /github %}}
@@ -155,7 +159,7 @@ resource "aws_instance" "todo_instance" {
 {{< / highlight >}}
 <!-- /snippet:deploy_aws_instance_systemd -->
 
-The last step now is to add java to the machine, create a user to run the application and install and enable the systemd unit.
+The last step now is to install java on the machine, create a user to run the application and install and enable the systemd unit. To keep everything neat and tidy we move everything related to the application in a seperate folder that is owned by the same user that is also used to run the application. As a last step we enable the newly created systemd unit so that it started on every system boot and finally start the aplication right away.
 
 <!-- snippet:deploy_aws_instance_install -->
 {{% github href="10_basic/30_deployment/deploy/todo.tf#L84-L100" %}}todo.tf{{% /github %}}
@@ -188,7 +192,10 @@ resource "aws_instance" "todo_instance" {
 {{< / highlight >}}
 <!-- /snippet:deploy_aws_instance_install -->
 
+Now that we finally have a definition for the application instance, lets again see what terrsform would do if would ask it to apply the configuration.
 
 ```
 terraform plan -var 'application_jar=todo-0.1.0.jar'
+
+XXX plan output XXX
 ```
