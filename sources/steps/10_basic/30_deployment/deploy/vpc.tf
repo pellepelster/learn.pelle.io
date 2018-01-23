@@ -9,7 +9,6 @@ resource "aws_vpc" "todo_vpc" {
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = "${aws_vpc.todo_vpc.id}"
   cidr_block              = "10.0.0.1/24"
-  availability_zone       = "eu-central-1a"
   map_public_ip_on_launch = true
 }
 # /snippet:deploy_aws_public_subnet

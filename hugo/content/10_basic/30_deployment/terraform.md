@@ -5,10 +5,10 @@ weight: 30
 disableToc: true
 ---
 
-We now have to choose which infrastructure as code software to use. When it comes to the sheer number of supported cloud providers [Terraform](https://www.terraform.io/) is the tool of our choiche. All major cloud providers contribute up-to-date plugins that abstract their apis into the text based declarative Terraform configuration language which is based on the text based [HashiCorp configuration language (HCL)](https://github.com/hashicorp/hcl).
+We now have to choose which infrastructure as code software to use. When it comes to the sheer number of supported cloud providers [Terraform](https://www.terraform.io/) is the tool of our choiche. All major cloud providers contribute up-to-date plugins that abstract their apis into the declarative Terraform configuration language which is based on the text based [HashiCorp configuration language (HCL)](https://github.com/hashicorp/hcl).
 
 ## Initial Setup
-First we have to tell Terraform which provider we are going to use, in our case the AWS provider using `eu-central-1` as the default region for alle created resources:
+First we have to tell Terraform which provider we are going to use, in our case the AWS provider using `eu-central-1` as the default region for alle created resources. In AWS terms a region translate to a datacenter where our resources are launched. It is important to keep in mind that not all AWS services are always availbale in all regions, also the prices may differ depending on the region, have a look [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html) for more in dpeth information about regions
 
 <!-- snippet:deploy_aws_provider -->
 {{% github href="10_basic/30_deployment/deploy/providers.tf#L1-L3" %}}providers.tf{{% /github %}}
@@ -19,7 +19,7 @@ provider "aws" {
 {{< / highlight >}}
 <!-- /snippet:deploy_aws_provider -->
 
-Now we can initialize the working directory by running `terraform init` which will also scan all Terraform files for referenced plugins and download them as needed.
+Now we can initialize the working directory by running `terraform init` which will scan all Terraform files for referenced plugins and download them as needed.
 
 ```
 $ cd deploy
@@ -71,10 +71,7 @@ persisted to local or remote state storage.
 ------------------------------------------------------------------------
 
 No changes. Infrastructure is up-to-date.
-
-This means that Terraform did not detect any differences between your
-configuration and real physical resources that exist. As a result, no
-actions need to be performed.
+[...]
 ```
 
 What happened is that terraform compared the desired state against the acutal running state in the cloud. As we don't have any resources defined yet Terraform didn't detect anything it could to and came up with no changes.
