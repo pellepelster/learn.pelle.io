@@ -3,6 +3,7 @@ title: "Packaging the application"
 date: 2017-12-11T21:35:04+01:00
 weight: 10
 disableToc: true
+showHeaderLink: true 
 ---
 
 ## Creating a deployable artifact
@@ -26,7 +27,7 @@ $ mv gradle ../
 The Gradle wrapper bootstraps the Gradle environment needed for the build and remove the burden to install Gradle from the user. This helps to make the build more portable and less dependent on the local setup.
 {{% /notice %}}
 
-In a multi project we need a file `settings.gradle` which tells Gradle what subprojects are part of the build:
+In a multi project we need a file `settings.gradle` which tells Gradle what sub-projects are part of the build:
 
 <!-- file:10_basic/20_packaging/settings.gradle -->
 {{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/20_packaging/settings.gradle" %}}settings.gradle{{% /github %}}

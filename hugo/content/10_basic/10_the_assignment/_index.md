@@ -3,10 +3,10 @@ title: "The Assignment"
 date: 2017-12-11T21:35:04+01:00
 weight: 1
 disableToc: true
-headerLink: https://github.com/pellepelster/learn-artefacts/tree/master/10_basic/10_the_assignment 
+showHeaderLink: true 
 ---
 
-Congratulations, you just landed your first job at Todo Inc. After endless nights of relentless programming and designing your company has just been founded with millions of venture capital after pitching investors with a shiny protoype. The dilema: It's just a prototype and its your job to turn this pile of hasty assembled source files and workarounds into a production ready setup.
+Congratulations, you just landed your first job at Todo Inc. After endless nights of relentless programming and designing your company has just been founded with millions of venture capital after pitching investors with a shiny prototype. The dilemma: It's just a prototype and its your job to turn this pile of hasty assembled source files and workarounds into a production ready setup.
 
 ## Project Files
 

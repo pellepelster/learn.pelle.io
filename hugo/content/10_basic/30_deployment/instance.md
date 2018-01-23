@@ -3,13 +3,14 @@ title: "Instance"
 date: 2017-12-11T21:35:04+01:00
 weight: 50
 disableToc: true
+showHeaderLink: true 
 ---
 
-Now that we have a working VPC with an appropiate ip subnet to dpeloy new instances in, we will start with our first EC2 instance. Before we start we only need a few prerequisites, the first one being a disk with an operating system image to boot the instance.
+Now that we have a working VPC with an appropriate ip subnet to deploy new instances in, we will start with our first EC2 instance. Before we start we only need a few prerequisites, the first one being a disk with an operating system image to boot the instance.
 
 ## AMI
-In AWS terms those disks are called [AMIs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html) (Amazon Machine Images) that apart from some metadata contain the acutal system image that is used as a template for the root disk of our instance when we start it.
-For now we will use a prebuild AMI from Amazon based on Amazon Linux. Because those images are regulary updated we want to make sure to always use the latest version of this AMI.
+In AWS terms those disks are called [AMIs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html) (Amazon Machine Images) that apart from some meta data contain the Calcutta system image that is used as a template for the root disk of our instance when we start it.
+For now we will use a prebuild AMI from Amazon based on Amazon Linux. Because those images are regularly updated we want to make sure to always use the latest version of this AMI.
 Terraform offers the concept of data providers that allow us to fetch oder compute information that is only available outside our Terraform configuration. In our case we use the `aws_ami` data source that lets us filter the list of available AMIs. Because AMIs always belong to an AWS account we have to specify from which account we want to pull the AMI and also how the name of the AMI looks like `^amzn2-ami-hvm-`. Because the `name_regex` will match multiple AMIs (`amzn2-ami-hvm-2017-07-02`, `amzn2-ami-hvm-2017-07-03`, ...) we set `most_recent` to true so only the latest image is returned.
 
 <!-- snippet:deploy_aws_ami -->
@@ -24,8 +25,8 @@ data "aws_ami" "amazon_linux2_ami" {
 <!-- /snippet:deploy_aws_ami -->
 
 ## SSH key
-Of course we not only want to start an instance but we also may need to login to the running instance. AWS EC2 instances that are configured using [cloud-init](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-linux-ami-basics.html#amazon-linux-cloud-init) that lets us add arbritary actions that will be executed on instance boot. As the installation of SSH keys is a rather common task cloud-init provides an abstraction for this task, that is exposed via AWS and therefore usable in Terraform. We will use a local public ssh key and upload it to our AWS account (if you do net have yet an SSH keypair, have a look [here](https://www.ssh.com/ssh/keygen/), on how to create one).
-As we have already seen, Terrsform offers a interpolation functionality, that lets us reference other Terraform resources. Furthermore it also provides various other functions, for example the `file` function that provides access to files from the local filesystem. For the SSH key upload we use the `file` function to read the content of the SSH public key and upload it to AWS.
+Of course we not only want to start an instance but we also may need to login to the running instance. AWS EC2 instances that are configured using [cloud-init](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-linux-ami-basics.html#amazon-linux-cloud-init) that lets us add arbitrary actions that will be executed on instance boot. As the installation of SSH keys is a rather common task cloud-init provides an abstraction for this task, that is exposed via AWS and therefore usable in Terraform. We will use a local public ssh key and upload it to our AWS account (if you do net have yet an SSH keypair, have a look [here](https://www.ssh.com/ssh/keygen/), on how to create one).
+As we have already seen, Terraform offers a interpolation functionality, that lets us reference other Terraform resources. Furthermore it also provides various other functions, for example the `file` function that provides access to files from the local file system. For the SSH key upload we use the `file` function to read the content of the SSH public key and upload it to AWS.
 
 <!-- snippet:deploy_aws_key -->
 {{% github href="10_basic/30_deployment/deploy/todo.tf#L7-L10" %}}todo.tf{{% /github %}}
@@ -101,7 +102,7 @@ Now that the application jar is uploaded we have to think how we start the appli
 > systemd is an init system used in Linux distributions to bootstrap the user space and to manage system processes after booting. It is a replacement for the UNIX System V and Berkeley Software Distribution init systems.
 
 Services (and any other resources that are managed by systemd) are called units and configured by unit files. The unit configuration tells systemd what program to start with which user context and also lets us define eventual dependencies on other services.
-So as next step we upload a systemd unit to start and stop our application. As the creation of configuration files is a common task when provisioning infrastrucute, terraform includes a templating system supporting all interpolations that are available in HCL. First we have to create the template file.
+So as next step we upload a systemd unit to start and stop our application. As the creation of configuration files is a common task when provisioning infrastructure, Terraform includes a templating system supporting all interpolations that are available in HCL. First we have to create the template file.
 
 <!-- file:10_basic/30_deployment/deploy/todo.service.tpl -->
 {{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/30_deployment/deploy/todo.service.tpl" %}}todo.service.tpl{{% /github %}}
@@ -159,7 +160,7 @@ resource "aws_instance" "todo_instance" {
 {{< / highlight >}}
 <!-- /snippet:deploy_aws_instance_systemd -->
 
-The last step now is to install java on the machine, create a user to run the application and install and enable the systemd unit. To keep everything neat and tidy we move everything related to the application in a seperate folder that is owned by the same user that is also used to run the application. As a last step we enable the newly created systemd unit so that it started on every system boot and finally start the aplication right away.
+The last step now is to install Java on the machine, create a user to run the application and install and enable the systemd unit. To keep everything neat and tidy we move everything related to the application in a separate folder that is owned by the same user that is also used to run the application. As a last step we enable the newly created systemd unit so that it started on every system boot and finally start the application right away.
 
 <!-- snippet:deploy_aws_instance_install -->
 {{% github href="10_basic/30_deployment/deploy/todo.tf#L84-L100" %}}todo.tf{{% /github %}}
@@ -192,7 +193,7 @@ resource "aws_instance" "todo_instance" {
 {{< / highlight >}}
 <!-- /snippet:deploy_aws_instance_install -->
 
-Now that we finally have a definition for the application instance, lets again see what terrsform would do if would ask it to apply the configuration.
+Now that we finally have a definition for the application instance, lets again see what Terraform would do if would ask it to apply the configuration.
 
 ```
 terraform plan -var 'application_jar=todo-0.1.0.jar'

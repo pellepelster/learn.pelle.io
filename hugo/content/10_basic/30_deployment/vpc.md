@@ -3,6 +3,7 @@ title: "VPC"
 date: 2017-12-11T21:35:04+01:00
 weight: 40
 disableToc: true
+showHeaderLink: true 
 ---
 
 Before we start the first server instance to host the application we have to lay some groundwork for the instance. In the physical world we would start by setting up a network, adding a connection to the internet so the servers can be reached from the outside and then finally set up a server and connect it to the network.
@@ -74,7 +75,7 @@ $ terraform plan
 XXX insert plan output XXX
 ```
 
-Terraform just compared it internal state that is stored in the `terraform.tfstate*` files against the running configuration in AWS. As nothing is yet availbale in AWS Terraform show that it would create new resources for every item in our configuration.
+Terraform just compared it internal state that is stored in the `terraform.tfstate*` files against the running configuration in AWS. As nothing is yet available in AWS Terraform show that it would create new resources for every item in our configuration.
 
 {{% notice tip %}}
 Terraform uses its state to keep track of the mappings between our configuration and the actual resources. It is also used to keep track of additional metadata needed by Terraform (like for example resource dependencies). The state also helps to boost performance as it would not be feasible to gather the state from AWS on each run.
@@ -97,5 +98,5 @@ Terraform now created an AWS VPC according to our configuration, when we log in 
 ![Screenshot](http://via.placeholder.com/800x600)
 
 {{% notice tip %}}
-It is a good habit to always do a `terraform plan` before executing a `terraform apply`. Working this way makes it easy to do quick sanity check and spot mistakes that would result in catastropic results when applied.  
+It is a good habit to always do a `terraform plan` before executing a `terraform apply`. Working this way makes it easy to do quick sanity check and spot mistakes that would result in catastrophic results when applied.  
 {{% /notice %}}
