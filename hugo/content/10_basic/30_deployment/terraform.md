@@ -13,7 +13,7 @@ First we have to tell Terraform which provider we are going to use, in our case 
 
 <!-- snippet:deploy_aws_provider -->
 {{% github href="10_basic/30_deployment/deploy/providers.tf#L1-L3" %}}providers.tf{{% /github %}}
-{{< highlight go "linenos=table,linenostart=1,hl_lines=" >}}
+{{< highlight go "" >}}
 provider "aws" {
   region = "eu-central-1"
 }

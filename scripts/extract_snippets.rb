@@ -37,7 +37,7 @@ ARGV.each do|filename|
       line_start = lines[snippet[:start] + 1][:number]
       line_end = lines[snippet[:end] -1][:number]
       file.puts "{{% github href=\"#{filename}#L#{line_start}-L#{line_end}\" %}}#{File.basename filename}{{% /github %}}"
-      file.puts "{{< highlight go \"linenos=table,linenostart=#{line_start},hl_lines=\" >}}"
+      file.puts "{{< highlight go \"\" >}}"
       if (indented)
         file.puts lines[0, start].reverse.select { |x| !x[:indented] && !x[:empty] }.first[:content]
         file.puts "\n#{indention}[..]\n\n"

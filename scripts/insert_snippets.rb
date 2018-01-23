@@ -51,7 +51,7 @@ ARGV.each do|filename|
 
     file_lines=[]
     file_lines.push({ content: "{{% github href=\"#{insert_filename}\" %}}#{File.basename insert_filename}{{% /github %}}\n" })
-    file_lines.push({ content: "{{< highlight go \"linenos=table,linenostart=,hl_lines=\" >}}\n" })
+    file_lines.push({ content: "{{< highlight go \"\" >}}\n" })
     file_lines.push(*read_lines(insert_filename))
     file_lines.push({ content: "{{< / highlight >}}\n" })
 

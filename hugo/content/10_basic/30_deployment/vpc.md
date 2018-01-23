@@ -17,7 +17,7 @@ Lets start with the VPC definition, we pick a private non-routed ip subnet from 
 
 <!-- snippet:deploy_aws_vpc -->
 {{% github href="10_basic/30_deployment/deploy/vpc.tf#L1-L4" %}}vpc.tf{{% /github %}}
-{{< highlight go "linenos=table,linenostart=1,hl_lines=" >}}
+{{< highlight go "" >}}
 resource "aws_vpc" "todo_vpc" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
@@ -30,7 +30,7 @@ Of course those private networks are not available from outside AWS so we config
 
 <!-- snippet:deploy_aws_public_subnet -->
 {{% github href="10_basic/30_deployment/deploy/vpc.tf#L6-L10" %}}vpc.tf{{% /github %}}
-{{< highlight go "linenos=table,linenostart=6,hl_lines=" >}}
+{{< highlight go "" >}}
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = "${aws_vpc.todo_vpc.id}"
   cidr_block              = "10.0.0.1/24"
@@ -43,7 +43,7 @@ The last thing we need to enable internet connectivity for instances in our VPC 
 
 <!-- snippet:deploy_aws_routing -->
 {{% github href="10_basic/30_deployment/deploy/vpc.tf#L12-L28" %}}vpc.tf{{% /github %}}
-{{< highlight go "linenos=table,linenostart=12,hl_lines=" >}}
+{{< highlight go "" >}}
 resource "aws_internet_gateway" "todo_internet_gateway" {
   vpc_id = "${aws_vpc.todo_vpc.id}"
 }

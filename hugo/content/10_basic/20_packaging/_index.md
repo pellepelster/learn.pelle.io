@@ -31,7 +31,7 @@ In a multi project we need a file `settings.gradle` which tells Gradle what sub-
 
 <!-- file:10_basic/20_packaging/settings.gradle -->
 {{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/20_packaging/settings.gradle" %}}settings.gradle{{% /github %}}
-{{< highlight go "linenos=table,linenostart=,hl_lines=" >}}
+{{< highlight go "" >}}
 include 'todo-server', 'todo-frontend'
 {{< / highlight >}}
 <!-- /file:10_basic/20_packaging/settings.gradle -->
@@ -40,7 +40,7 @@ Additionaly we create a `build.gradle` to define everything that is common for a
 
 <!-- file:10_basic/20_packaging/build.gradle -->
 {{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/20_packaging/build.gradle" %}}build.gradle{{% /github %}}
-{{< highlight go "linenos=table,linenostart=,hl_lines=" >}}
+{{< highlight go "" >}}
 allprojects {
 
     repositories {
@@ -61,7 +61,7 @@ As already mentioned it is vitally important for the build not to rely on any lo
 
 <!-- snippet:frontend_nodejs_plugin_dependency -->
 {{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L1-L13" %}}build.gradle{{% /github %}}
-{{< highlight go "linenos=table,linenostart=1,hl_lines=" >}}
+{{< highlight go "" >}}
 buildscript {
 	repositories {
 		maven {
@@ -82,7 +82,7 @@ The plugin can be configured to a specific node.js/npm version:
 
 <!-- snippet:frontend_nodejs_plugin_configuration -->
 {{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L15-L21" %}}build.gradle{{% /github %}}
-{{< highlight go "linenos=table,linenostart=15,hl_lines=" >}}
+{{< highlight go "" >}}
 node {
   version = '6.3.1'
   npmVersion = '4.0.1'
@@ -97,7 +97,7 @@ Now we create a new task that executes the npm build:
 
 <!-- snippet:frontend_nodejs_build -->
 {{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L23-L27" %}}build.gradle{{% /github %}}
-{{< highlight go "linenos=table,linenostart=23,hl_lines=" >}}
+{{< highlight go "" >}}
 task frontendBuild(type: NpmTask) {
 	args = [ 'run', 'build' ]
 }
@@ -110,7 +110,7 @@ and package the resulting file in a jar file:
 
 <!-- snippet:frontend_nodejs_jar -->
 {{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L29-L36" %}}build.gradle{{% /github %}}
-{{< highlight go "linenos=table,linenostart=29,hl_lines=" >}}
+{{< highlight go "" >}}
 task frontendJar(type: Jar) {
  	appendix = 'frontend'
  	into 'frontend'
@@ -132,7 +132,7 @@ As the backend is already built with Gradle we only need some minor modification
 
 <!-- snippet:frontend_backend_dependency -->
 {{% github href="10_basic/30_deployment/todo-server/build.gradle#L22-L31" %}}build.gradle{{% /github %}}
-{{< highlight go "linenos=table,linenostart=22,hl_lines=" >}}
+{{< highlight go "" >}}
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
     testCompile('org.springframework.boot:spring-boot-test')
@@ -150,7 +150,7 @@ Now that the static `frontend.jar` is packaged in our application we only have t
 
 <!-- file:10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/FrontendContent.java -->
 {{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/FrontendContent.java" %}}FrontendContent.java{{% /github %}}
-{{< highlight go "linenos=table,linenostart=,hl_lines=" >}}
+{{< highlight go "" >}}
 package io.pelle.todo;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -175,7 +175,7 @@ As a finishing touch we set the `executable` attribute of the Spring Boot gradle
 
 <!-- snippet:backend_executable -->
 {{% github href="10_basic/30_deployment/todo-server/build.gradle#L13-L15" %}}build.gradle{{% /github %}}
-{{< highlight go "linenos=table,linenostart=13,hl_lines=" >}}
+{{< highlight go "" >}}
 springBoot {
     executable = true
 }

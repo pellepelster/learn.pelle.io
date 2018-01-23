@@ -15,7 +15,7 @@ Terraform offers the concept of data providers that allow us to fetch oder compu
 
 <!-- snippet:deploy_aws_ami -->
 {{% github href="10_basic/30_deployment/deploy/todo.tf#L1-L5" %}}todo.tf{{% /github %}}
-{{< highlight go "linenos=table,linenostart=1,hl_lines=" >}}
+{{< highlight go "" >}}
 data "aws_ami" "amazon_linux2_ami" {
   most_recent = true
   name_regex  = "^amzn2-ami-hvm-"
@@ -30,7 +30,7 @@ As we have already seen, Terraform offers a interpolation functionality, that le
 
 <!-- snippet:deploy_aws_key -->
 {{% github href="10_basic/30_deployment/deploy/todo.tf#L7-L10" %}}todo.tf{{% /github %}}
-{{< highlight go "linenos=table,linenostart=7,hl_lines=" >}}
+{{< highlight go "" >}}
 resource "aws_key_pair" "todo_keypair" {
   key_name   = "todo_keypair"
   public_key = "${file("~/.ssh/id_rsa.pub")}"
@@ -43,7 +43,7 @@ Now we have finally reached the point where we are able to launch and EC2 instan
 
 <!-- snippet:deploy_aws_instance -->
 {{% github href="10_basic/30_deployment/deploy/todo.tf#L60-L64" %}}todo.tf{{% /github %}}
-{{< highlight go "linenos=table,linenostart=60,hl_lines=" >}}
+{{< highlight go "" >}}
 resource "aws_instance" "todo_instance" {
 
  [..]
@@ -66,7 +66,7 @@ To avoid hard coding the path of the jar file (as it may change depending on bui
 
 <!-- snippet:deploy_aws_instance_var -->
 {{% github href="10_basic/30_deployment/deploy/variables.tf#L1-L3" %}}variables.tf{{% /github %}}
-{{< highlight go "linenos=table,linenostart=1,hl_lines=" >}}
+{{< highlight go "" >}}
 variable "application_jar" {
   type = "string"
 }
@@ -77,7 +77,7 @@ This variable can now be used with the usual interpolation syntax `var.$variable
 
 <!-- snippet:deploy_aws_instance_jar -->
 {{% github href="10_basic/30_deployment/deploy/todo.tf#L66-L73" %}}todo.tf{{% /github %}}
-{{< highlight go "linenos=table,linenostart=66,hl_lines=" >}}
+{{< highlight go "" >}}
 resource "aws_instance" "todo_instance" {
 
  [..]
@@ -106,7 +106,7 @@ So as next step we upload a systemd unit to start and stop our application. As t
 
 <!-- file:10_basic/30_deployment/deploy/todo.service.tpl -->
 {{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/30_deployment/deploy/todo.service.tpl" %}}todo.service.tpl{{% /github %}}
-{{< highlight go "linenos=table,linenostart=,hl_lines=" >}}
+{{< highlight go "" >}}
 [Unit]
 Description=todo application
 After=syslog.target
@@ -125,7 +125,7 @@ And now create the according template datasource. All variables that are used in
 
 <!-- snippet:deploy_aws_instance_systemd_unit -->
 {{% github href="10_basic/30_deployment/deploy/todo.tf#L50-L56" %}}todo.tf{{% /github %}}
-{{< highlight go "linenos=table,linenostart=50,hl_lines=" >}}
+{{< highlight go "" >}}
 data "template_file" "todo_systemd_service" {
   template = "${file("todo.service.tpl")}"
 
@@ -140,7 +140,7 @@ Now we copy the processed template to the server instance. The rendered output c
 
 <!-- snippet:deploy_aws_instance_systemd -->
 {{% github href="10_basic/30_deployment/deploy/todo.tf#L75-L82" %}}todo.tf{{% /github %}}
-{{< highlight go "linenos=table,linenostart=75,hl_lines=" >}}
+{{< highlight go "" >}}
 resource "aws_instance" "todo_instance" {
 
  [..]
@@ -164,7 +164,7 @@ The last step now is to install Java on the machine, create a user to run the ap
 
 <!-- snippet:deploy_aws_instance_install -->
 {{% github href="10_basic/30_deployment/deploy/todo.tf#L84-L100" %}}todo.tf{{% /github %}}
-{{< highlight go "linenos=table,linenostart=84,hl_lines=" >}}
+{{< highlight go "" >}}
 resource "aws_instance" "todo_instance" {
 
  [..]
