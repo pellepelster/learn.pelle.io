@@ -29,12 +29,11 @@ Now we assign a public subnet to our VPC, this is where the servers we are about
 Of course those private networks are not available from outside AWS so we configure `map_public_ip_on_launch` to `true` which means that a publicly reachable ip address gets assigned to all new instances that are launched ins this subnet.
 
 <!-- snippet:deploy_aws_public_subnet -->
-{{% github href="10_basic/30_deployment/deploy/vpc.tf#L6-L11" %}}vpc.tf{{% /github %}}
+{{% github href="10_basic/30_deployment/deploy/vpc.tf#L6-L10" %}}vpc.tf{{% /github %}}
 {{< highlight go "linenos=table,linenostart=6,hl_lines=" >}}
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = "${aws_vpc.todo_vpc.id}"
   cidr_block              = "10.0.0.1/24"
-  availability_zone       = "eu-central-1a"
   map_public_ip_on_launch = true
 }
 {{< / highlight >}}
@@ -43,8 +42,8 @@ resource "aws_subnet" "public_subnet" {
 The last thing we need to enable internet connectivity for instances in our VPC is an [internet gateway](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Internet_Gateway.html) that enables access to the internet for instances with an public ip address. Like in the real world we simply add a default route pointing to this gateway so all instances in our VPC know how to reach addresses outside of the VPC.
 
 <!-- snippet:deploy_aws_routing -->
-{{% github href="10_basic/30_deployment/deploy/vpc.tf#L13-L29" %}}vpc.tf{{% /github %}}
-{{< highlight go "linenos=table,linenostart=13,hl_lines=" >}}
+{{% github href="10_basic/30_deployment/deploy/vpc.tf#L12-L28" %}}vpc.tf{{% /github %}}
+{{< highlight go "linenos=table,linenostart=12,hl_lines=" >}}
 resource "aws_internet_gateway" "todo_internet_gateway" {
   vpc_id = "${aws_vpc.todo_vpc.id}"
 }

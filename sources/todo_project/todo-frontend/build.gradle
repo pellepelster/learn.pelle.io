@@ -33,7 +33,7 @@ frontendBuild.dependsOn('npmInstall')
 // /snippet:frontend_nodejs_build
 
 // snippet:frontend_nodejs_jar
- task frontendJar(type: Jar) {
+task frontendJar(type: Jar) {
  	appendix = 'frontend'
  	into 'frontend'
  	from fileTree('./dist/')

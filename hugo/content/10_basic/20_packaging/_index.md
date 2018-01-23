@@ -111,14 +111,7 @@ and package the resulting file in a jar file:
 <!-- snippet:frontend_nodejs_jar -->
 {{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L29-L36" %}}build.gradle{{% /github %}}
 {{< highlight go "linenos=table,linenostart=29,hl_lines=" >}}
-// snippet:frontend_nodejs_jar
-{{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L29-L36" %}}build.gradle{{% /github %}}
-{{< highlight go "linenos=table,linenostart=29,hl_lines=" >}}
-// snippet:frontend_nodejs_jar
-
- [..]
-
- task frontendJar(type: Jar) {
+task frontendJar(type: Jar) {
  	appendix = 'frontend'
  	into 'frontend'
  	from fileTree('./dist/')
@@ -126,10 +119,6 @@ and package the resulting file in a jar file:
 }
 
 frontendJar.dependsOn('frontendBuild')
-
- [..]
-
-}
 {{< / highlight >}}
 <!-- /snippet:frontend_nodejs_jar -->
 

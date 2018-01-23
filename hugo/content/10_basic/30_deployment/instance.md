@@ -108,7 +108,7 @@ So as next step we upload a systemd unit to start and stop our application. As t
 {{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/30_deployment/deploy/todo.service.tpl" %}}todo.service.tpl{{% /github %}}
 {{< highlight go "linenos=table,linenostart=,hl_lines=" >}}
 [Unit]
-Description=myapp
+Description=todo application
 After=syslog.target
 
 [Service]
