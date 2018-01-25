@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,8 +28,8 @@ public class TodoController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Todo> create(@RequestBody Todo todoToCreate) {
-		Todo todo = todoStorage.create(todoToCreate);
+	public ResponseEntity<Todo> create(@Valid @RequestBody NewTodo newTodo) {
+		Todo todo = todoStorage.create(newTodo);
     return new ResponseEntity<>(todo, HttpStatus.CREATED);
 	}
 

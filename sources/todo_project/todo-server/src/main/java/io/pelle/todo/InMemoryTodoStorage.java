@@ -23,7 +23,8 @@ public class InMemoryTodoStorage implements TodoStorage {
   }
 
   @Override
-  public Todo create(Todo todo) {
+  public Todo create(NewTodo newTodo) {
+    Todo todo = new Todo(newTodo.getDescription());
     todos.add(todo);
     return todo;
   }

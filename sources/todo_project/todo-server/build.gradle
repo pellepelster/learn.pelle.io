@@ -24,6 +24,7 @@ jar {
 // snippet:frontend_backend_dependency
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
+    compile('com.google.guava:guava:23.6-jre')
     testCompile('org.springframework.boot:spring-boot-test')
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("com.jayway.jsonpath:json-path:2.2.0")

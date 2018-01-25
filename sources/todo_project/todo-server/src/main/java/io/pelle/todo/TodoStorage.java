@@ -10,7 +10,7 @@ public interface TodoStorage {
 
   Optional<Todo> getTodoById(UUID uuid);
 
-  Todo create(Todo todo);
+  Todo create(NewTodo newTodo);
 
   void deleteTodo(UUID uuid);
 

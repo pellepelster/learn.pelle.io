@@ -1,7 +1,9 @@
 package io.pelle.todo;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.util.ObjectUtils;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.UUID;
 

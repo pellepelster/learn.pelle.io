@@ -1,6 +1,7 @@
 package io.pelle.todo.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.pelle.todo.NewTodo;
 import io.pelle.todo.Todo;
 import io.pelle.todo.TodoApplication;
 import io.pelle.todo.TodoController;
@@ -33,6 +34,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -81,7 +83,7 @@ public class TodoControllerTest {
 		ObjectMapper objectMapper = new ObjectMapper();
 		final byte[] bytes = objectMapper.writeValueAsBytes(todo);
 
-		when(todoStorage.create(Mockito.any(Todo.class))).thenReturn(todo);
+		when(todoStorage.create(Mockito.any(NewTodo.class))).thenReturn(todo);
 
 		mvc.perform(post("/api/todos")
 					.accept(MediaType.APPLICATION_JSON)
@@ -93,16 +95,32 @@ public class TodoControllerTest {
           .andExpect(jsonPath("$.description", is("todo 2")))
           .andExpect(jsonPath("$.complete", is(false)));
 
-		verify(todoStorage, times(1)).create(Mockito.any(Todo.class));
+		verify(todoStorage, times(1)).create(Mockito.any(NewTodo.class));
 
-    ArgumentCaptor<Todo> argument = ArgumentCaptor.forClass(Todo.class);
+    ArgumentCaptor<NewTodo> argument = ArgumentCaptor.forClass(NewTodo.class);
     verify(todoStorage).create(argument.capture());
     assertThat("todo 2", is(argument.getValue().getDescription()));
 
 		verifyNoMoreInteractions(todoStorage);
 	}
 
-	@Test
+  @Test
+  public void testCreateTodoWithEmptyDescription() throws Exception {
+    final Todo todo = new Todo();
+    ObjectMapper objectMapper = new ObjectMapper();
+    final byte[] bytes = objectMapper.writeValueAsBytes(todo);
+
+    mvc.perform(post("/api/todos")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(bytes))
+        .andDo(MockMvcResultHandlers.print())
+        .andExpect(status().isBadRequest());
+
+    verifyZeroInteractions(todoStorage);
+  }
+
+  @Test
 	public void testDelete() throws Exception {
     UUID uuid = UUID.randomUUID();
 		doThrow(new IllegalArgumentException()).when(todoStorage).deleteTodo(null);
