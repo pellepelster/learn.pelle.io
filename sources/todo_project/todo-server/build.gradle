@@ -25,6 +25,10 @@ jar {
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('com.google.guava:guava:23.6-jre')
+    compile('org.springframework.data:spring-data-jpa:2.0.3.RELEASE')
+    compile('org.hibernate:hibernate-entitymanager:5.1.11.Final')
+    compile('org.hibernate:hibernate-core:5.1.11.Final')
+    compile('org.apache.derby:derby:10.14.1.0')
     testCompile('org.springframework.boot:spring-boot-test')
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("com.jayway.jsonpath:json-path:2.2.0")
