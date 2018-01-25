@@ -1,4 +1,4 @@
-package io.pelle.todo;
+package io.pelle.todo.controller;
 
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;

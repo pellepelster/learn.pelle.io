@@ -1,4 +1,4 @@
-package io.pelle.todo;
+package io.pelle.todo.configuration;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;

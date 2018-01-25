@@ -1,5 +1,6 @@
-package io.pelle.todo;
+package io.pelle.todo.configuration;
 
+import io.pelle.todo.TodoApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -16,7 +17,7 @@ import javax.sql.DataSource;
 
 
 @Configuration
-@EnableJpaRepositories
+@EnableJpaRepositories(basePackageClasses = {TodoApplication.class})
 @EnableTransactionManagement
 class DatabaseConfig {
 

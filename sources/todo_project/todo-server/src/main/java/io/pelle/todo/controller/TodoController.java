@@ -1,6 +1,10 @@
-package io.pelle.todo;
+package io.pelle.todo.controller;
 
+import io.pelle.todo.TodoStorage;
+import io.pelle.todo.dto.NewTodo;
+import io.pelle.todo.dto.Todo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,28 +28,30 @@ public class TodoController {
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Iterable<Todo>> list() {
-		return new ResponseEntity<>(todoStorage.allTodos(), HttpStatus.OK);
+		return new ResponseEntity<>(todoStorage.findAll(), HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Todo> create(@Valid @RequestBody NewTodo newTodo) {
-		Todo todo = todoStorage.create(newTodo);
+		Todo todo = todoStorage.save(new Todo(newTodo.getDescription()));
     return new ResponseEntity<>(todo, HttpStatus.CREATED);
 	}
 
 	@RequestMapping(value = "/{uuid}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(@PathVariable("uuid") String uuid) {
-		todoStorage.deleteTodo(UUID.fromString(uuid));
+	public void delete(@PathVariable("id") String id) {
+		todoStorage.delete(id);
 	}
 
-	@RequestMapping(value = "/{uuid}/markCompleted", method = RequestMethod.PUT)
-	public ResponseEntity<Boolean> markCompleted(@PathVariable("uuid") String uuid) {
+	@RequestMapping(value = "/{id}/markCompleted", method = RequestMethod.PUT)
+	public ResponseEntity<Todo> markCompleted(@PathVariable("id") String id) {
 
-		Optional<Boolean> updatedComplete = todoStorage.markCompleted(UUID.fromString(uuid));
+		Todo example = new Todo();
+		example.setId(id);
+		Todo todo = todoStorage.findOne(Example.of(example));
 
-		if (updatedComplete.isPresent()) {
-			return new ResponseEntity<>(updatedComplete.get(), HttpStatus.OK);
+		if (todo != null) {
+			return new ResponseEntity(todo, HttpStatus.OK);
 		}else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -53,11 +59,15 @@ public class TodoController {
 	}
 
 	@RequestMapping(value = "/{uuid}/updateDescription", method = RequestMethod.PUT)
-	public ResponseEntity<String> updateDescription(@PathVariable("uuid") String uuid, @RequestBody String description) {
-		Optional<String> updatedDescription = todoStorage.updateDescription(UUID.fromString(uuid), description);
+	public ResponseEntity<Todo> updateDescription(@PathVariable("id") String id, @RequestBody String description) {
 
-		if (updatedDescription.isPresent()) {
-			return new ResponseEntity<>(updatedDescription.get(), HttpStatus.OK);
+		Todo example = new Todo();
+		example.setId(id);
+		Todo todo = todoStorage.findOne(Example.of(example));
+
+		if (todo != null) {
+      todo.setDescription(description);
+			return new ResponseEntity<>(todoStorage.save(todo), HttpStatus.OK);
 		}else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

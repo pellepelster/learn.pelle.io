@@ -1,36 +1,48 @@
-package io.pelle.todo;
+package io.pelle.todo.dto;
 
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.util.ObjectUtils;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.UUID;
 
+@Entity
 public class Todo implements Serializable {
 
-	private UUID uuid = UUID.randomUUID();
+	@Id()
+	@Column()
+	private String id;
 
+	@Column()
 	private String description;
 
+	@Column()
 	private boolean complete;
 
 	public Todo() {
 	}
 
-	public Todo(UUID uuid, String description, boolean complete) {
-		this.uuid = uuid;
+	public Todo(String id, String description, boolean complete) {
+		this.id = id;
 		this.description = description;
 		this.complete = complete;
 	}
 
 	public Todo(String description)
 	{
-		this(UUID.randomUUID(), description, false);
+		this(UUID.randomUUID().toString(), description, false);
 	}
 
-	public UUID getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getDescription() {
@@ -51,7 +63,7 @@ public class Todo implements Serializable {
 
 	@Override
 	public String toString() {
-		return "[ id=" + this.uuid + ", description=" + this.description + ", complete=" + this.complete + " ]";
+		return "[ id=" + this.id + ", description=" + this.description + ", complete=" + this.complete + " ]";
 	}
 
 }

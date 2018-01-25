@@ -1,20 +1,13 @@
 package io.pelle.todo;
 
+import io.pelle.todo.dto.Todo;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface TodoStorage {
-
-  List<Todo> allTodos();
-
-  Optional<Todo> getTodoById(UUID uuid);
-
-  Todo create(NewTodo newTodo);
-
-  void deleteTodo(UUID uuid);
-
-  Optional<Boolean> markCompleted(UUID uuid);
-
-  Optional<String> updateDescription(UUID uuid, String description);
+@Repository
+public interface TodoStorage extends JpaRepository<Todo, String > {
 }

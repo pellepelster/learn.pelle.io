@@ -1,4 +1,4 @@
-package io.pelle.todo;
+package io.pelle.todo.dto;
 
 import com.google.common.base.MoreObjects;
 import org.hibernate.validator.constraints.NotEmpty;

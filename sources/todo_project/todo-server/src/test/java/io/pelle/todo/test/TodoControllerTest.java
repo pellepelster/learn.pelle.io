@@ -1,11 +1,10 @@
 package io.pelle.todo.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.pelle.todo.NewTodo;
-import io.pelle.todo.Todo;
 import io.pelle.todo.TodoApplication;
-import io.pelle.todo.TodoController;
 import io.pelle.todo.TodoStorage;
+import io.pelle.todo.controller.TodoController;
+import io.pelle.todo.dto.Todo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +12,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Example;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -30,6 +30,8 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.calls;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -63,7 +65,7 @@ public class TodoControllerTest {
   @Test
   public void testListTodos() throws Exception {
     UUID uuid = UUID.randomUUID();
-		when(todoStorage.allTodos()).thenReturn(Arrays.asList(new Todo(uuid, "todo 1", false)));
+		when(todoStorage.findAll()).thenReturn(Arrays.asList(new Todo(uuid.toString(), "todo 1", false)));
 
     mvc.perform(get("/api/todos")
         .accept(MediaType.APPLICATION_JSON))
@@ -73,7 +75,7 @@ public class TodoControllerTest {
 				.andExpect(jsonPath("$[0].description", is("todo 1")))
 				.andExpect(jsonPath("$[0].complete", is(false)));
 
-		 verify(todoStorage, times(1)).allTodos();
+		 verify(todoStorage, times(1)).findAll();
 		 verifyNoMoreInteractions(todoStorage);
   }
 
@@ -83,7 +85,7 @@ public class TodoControllerTest {
 		ObjectMapper objectMapper = new ObjectMapper();
 		final byte[] bytes = objectMapper.writeValueAsBytes(todo);
 
-		when(todoStorage.create(Mockito.any(NewTodo.class))).thenReturn(todo);
+		when(todoStorage.save(any(Todo.class))).thenReturn(todo);
 
 		mvc.perform(post("/api/todos")
 					.accept(MediaType.APPLICATION_JSON)
@@ -95,10 +97,10 @@ public class TodoControllerTest {
           .andExpect(jsonPath("$.description", is("todo 2")))
           .andExpect(jsonPath("$.complete", is(false)));
 
-		verify(todoStorage, times(1)).create(Mockito.any(NewTodo.class));
+		verify(todoStorage, times(1)).save(Mockito.any(Todo.class));
 
-    ArgumentCaptor<NewTodo> argument = ArgumentCaptor.forClass(NewTodo.class);
-    verify(todoStorage).create(argument.capture());
+    ArgumentCaptor<Todo> argument = ArgumentCaptor.forClass(Todo.class);
+    verify(todoStorage).save(argument.capture());
     assertThat("todo 2", is(argument.getValue().getDescription()));
 
 		verifyNoMoreInteractions(todoStorage);
@@ -123,12 +125,11 @@ public class TodoControllerTest {
   @Test
 	public void testDelete() throws Exception {
     UUID uuid = UUID.randomUUID();
-		doThrow(new IllegalArgumentException()).when(todoStorage).deleteTodo(null);
 
 		mvc.perform(delete("/api/todos/{uuid}", uuid.toString()))
 				.andExpect(status().isNoContent());
 
-    verify(todoStorage, times(1)).deleteTodo(eq(uuid));
+    verify(todoStorage, times(1)).delete(eq(uuid.toString()));
     verifyNoMoreInteractions(todoStorage);
   }
 
@@ -136,13 +137,14 @@ public class TodoControllerTest {
   public void testMarkCompleted() throws Exception {
     UUID uuid = UUID.randomUUID();
 
-    when(todoStorage.markCompleted(eq(uuid))).thenReturn(Optional.of(true));
+    when(todoStorage.findOne(any(Example.class))).thenReturn(Optional.of(new Todo(uuid.toString(), "xxx", false)));
+    when(todoStorage.save(any(Todo.class))).thenReturn(new Todo(uuid.toString(), "xxx", true));
 
     mvc.perform(put("/api/todos/{uuid}/markCompleted", uuid.toString()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", is(true)));
 
-    verify(todoStorage, times(1)).markCompleted(eq(uuid));
+    verify(todoStorage, times(1)).save(any(Todo.class));
     verifyNoMoreInteractions(todoStorage);
   }
 
@@ -150,26 +152,27 @@ public class TodoControllerTest {
   public void testMarkCompletedWithInvalidUUID() throws Exception {
     UUID uuid = UUID.randomUUID();
 
-    when(todoStorage.markCompleted(eq(uuid))).thenReturn(Optional.empty());
+    when(todoStorage.findOne(any(Example.class))).thenReturn(null);
 
     mvc.perform(put("/api/todos/{uuid}/markCompleted", uuid.toString()))
         .andExpect(status().isNotFound());
+    verify(todoStorage, times(1)).findOne(any(Example.class));
   }
-
 
   @Test
   public void testUpdateDescription() throws Exception {
     UUID uuid = UUID.randomUUID();
 
-    when(todoStorage.updateDescription(eq(uuid), eq("todo 3"))).thenReturn(Optional.of("todo 3"));
+    when(todoStorage.findOne(any(Example.class))).thenReturn(new Todo(uuid.toString(), "xxx", false));
+    when(todoStorage.save(any(Todo.class))).thenReturn(new Todo(uuid.toString(), "todo 3", true));
 
-    mvc.perform(put("/api/todos/{uuid}/updateDescription", uuid.toString())
+    mvc.perform(put("/api/todos/{id}/updateDescription", uuid.toString())
         .content("todo 3"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", is("todo 3")));
 
 
-    verify(todoStorage, times(1)).updateDescription(eq(uuid), eq("todo 3"));
+    verify(todoStorage, times(1)).save(any(Todo.class));
     verifyNoMoreInteractions(todoStorage);
   }
 
@@ -177,13 +180,12 @@ public class TodoControllerTest {
   public void testUpdateDescriptionWithInvalidUUID() throws Exception {
     UUID uuid = UUID.randomUUID();
 
-    when(todoStorage.updateDescription(eq(uuid), eq("todo 3"))).thenReturn(Optional.empty());
+    when(todoStorage.findOne(any(Example.class))).thenReturn(new Todo(uuid.toString(), "xxx", false));
 
-    mvc.perform(put("/api/todos/{uuid}/updateDescription", uuid.toString()).content("todo 3"))
+    mvc.perform(put("/api/todos/{id}/updateDescription", uuid.toString()).content("todo 3"))
         .andExpect(status().isNotFound());
 
-    verify(todoStorage, times(1)).updateDescription(eq(uuid), eq("todo 3"));
-    verifyNoMoreInteractions(todoStorage);
+    verifyZeroInteractions(todoStorage);
   }
 
 }
