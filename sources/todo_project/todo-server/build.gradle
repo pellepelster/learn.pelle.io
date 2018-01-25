@@ -30,6 +30,6 @@ dependencies {
     testCompile("com.jayway.jsonpath:json-path-assert:2.2.0")
     testCompile('org.springframework:spring-test')
     testCompile('junit:junit')
-    runtime project(path: ':todo-frontend', configuration: 'frontend')
+//    runtime project(path: ':todo-frontend', configuration: 'frontend')
 }
 // /snippet:frontend_backend_dependency
