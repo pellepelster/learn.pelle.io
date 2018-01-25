@@ -1,6 +1,13 @@
 <template>
 
   <div class="container" style="width: 60%;">
+
+    <transition name="fade">
+      <div class="alert alert-danger" role="alert" v-for="error in errors">
+        {{ error }}
+      </div>
+    </transition>
+
     <div class="row">
       <div class="col-sm">
         <h1>Todos</h1>
@@ -18,7 +25,7 @@
         <h1></h1>
       </div>
     </div>
-    <div class="row" v-bind:todo="todo" v-for="todo in todos" :key="todo.uuid">
+    <div class="row" v-for="todo in todos" :key="todo.uuid">
       <div class="col-sm">
         <div class="alert alert-primary clearfix" role="alert">
         <span class="float-left  align-baseline">
@@ -44,6 +51,13 @@ export default {
     }
   },
   methods: {
+    addError (error) {
+      this.errors.push(error)
+      setTimeout(() => {
+        var index = this.errors.indexOf(error)
+        this.errors.splice(index, 1)
+      }, 3000)
+    },
     updateList () {
       HTTP.get('todos').then(response => {
         this.todos = response.data
@@ -59,8 +73,8 @@ export default {
       .then(response => {
         this.updateList()
       })
-      .catch(e => {
-        this.errors.push(e)
+      .catch(error => {
+        this.addError(error)
       })
 
       this.newTodo = ''
@@ -70,8 +84,8 @@ export default {
         var index = this.todos.indexOf(todo)
         this.todos.splice(index, 1)
       })
-      .catch(e => {
-        this.errors.push(e)
+      .catch(error => {
+        this.addError(error)
       })
     }
   },
@@ -82,4 +96,10 @@ export default {
 </script>
 
 <style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 1.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
 </style>

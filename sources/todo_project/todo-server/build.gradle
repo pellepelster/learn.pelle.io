@@ -7,6 +7,10 @@ buildscript {
     }
 }
 
+plugins {
+    id 'com.github.sherter.google-java-format' version '0.6'
+}
+
 apply plugin: 'org.springframework.boot'
 apply plugin: 'java'
 
@@ -23,12 +27,16 @@ jar {
 
 // snippet:frontend_backend_dependency
 dependencies {
+<<<<<<< HEAD
 //    compile('org.springframework.boot:spring-boot-starter-web')
+=======
+>>>>>>> add sql storage
     compile('com.google.guava:guava:23.6-jre')
 //    compile('org.springframework.data:spring-data-jpa:2.0.3.RELEASE')
 //    compile('org.hibernate:hibernate-entitymanager:5.1.11.Final')
 //    compile('org.hibernate:hibernate-core:5.1.11.Final')
     compile('org.apache.derby:derby:10.14.1.0')
+<<<<<<< HEAD
 
 
     compile('org.springframework.boot:spring-boot-starter-web:1.5.9.RELEASE')
@@ -36,6 +44,10 @@ dependencies {
 //    compile('org.springframework.data:spring-data-jpa:2.0.3.RELEASE')
 //    compile('org.springframework.data:spring-data-commons:2.0.3.RELEASE')
 
+=======
+    compile('org.springframework.boot:spring-boot-starter-web:1.5.9.RELEASE')
+    compile('org.springframework.boot:spring-boot-starter-data-jpa:1.5.9.RELEASE')
+>>>>>>> add sql storage
 
     testCompile('org.springframework.boot:spring-boot-test')
     testCompile("org.springframework.boot:spring-boot-starter-test")
