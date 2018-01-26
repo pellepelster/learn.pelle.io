@@ -105,7 +105,7 @@ Services (and any other resources that are managed by systemd) are called units 
 So as next step we upload a systemd unit to start and stop our application. As the creation of configuration files is a common task when provisioning infrastructure, Terraform includes a templating system supporting all interpolations that are available in HCL. First we have to create the template file.
 
 <!-- file:10_basic/30_deployment/deploy/todo.service.tpl -->
-{{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/30_deployment/deploy/todo.service.tpl" %}}todo.service.tpl{{% /github %}}
+{{% github href="/10_basic/30_deployment/deploy/todo.service.tpl" %}}todo.service.tpl{{% /github %}}
 {{< highlight go "" >}}
 [Unit]
 Description=todo application

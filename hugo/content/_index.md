@@ -32,10 +32,10 @@ If source code is available for a specific topic a link inside the breadcrumb pa
 ### Snippets
 The source code for each step is available at [https://github.com/pellepelster/learn-artefacts](https://github.com/pellepelster/learn-artefacts). On the top of each source code snippet a link points directly to the source file containing the snippet.
 
-{{% github href="hugo/content/basic/packaging/_index.md" %}}snippet{{% /github %}}
-{{< highlight go "linenos=table" >}}
-class ExampleClass {
-
+{{% github href="10_basic/10_the_assignment/todo-server/src/main/java/io/pelle/todo/TodoApplication.java" %}}TodoApplication.java{{% /github %}}
+{{< highlight go "" >}}
+class TodoApplication {
+  // [...]
 }
 {{< / highlight >}}
 

@@ -30,7 +30,7 @@ The Gradle wrapper bootstraps the Gradle environment needed for the build and re
 In a multi project we need a file `settings.gradle` which tells Gradle what sub-projects are part of the build:
 
 <!-- file:10_basic/20_packaging/settings.gradle -->
-{{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/20_packaging/settings.gradle" %}}settings.gradle{{% /github %}}
+{{% github href="/10_basic/20_packaging/settings.gradle" %}}settings.gradle{{% /github %}}
 {{< highlight go "" >}}
 include 'todo-server', 'todo-frontend'
 {{< / highlight >}}
@@ -39,7 +39,7 @@ include 'todo-server', 'todo-frontend'
 Additionaly we create a `build.gradle` to define everything that is common for all submodules of the build:
 
 <!-- file:10_basic/20_packaging/build.gradle -->
-{{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/20_packaging/build.gradle" %}}build.gradle{{% /github %}}
+{{% github href="/10_basic/20_packaging/build.gradle" %}}build.gradle{{% /github %}}
 {{< highlight go "" >}}
 allprojects {
 
@@ -153,7 +153,7 @@ dependencies {
 Now that the static `frontend.jar` is packaged in our application we only have to tell Spring Boot to serve this files by adding a `ResourceHandler` that matches all HTTP request and tries to serve them with the static files from the `frontend-jar` we just added as a dependency:
 
 <!-- file:10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/configuration/FrontendContent.java -->
-{{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/configuration/FrontendContent.java" %}}FrontendContent.java{{% /github %}}
+{{% github href="/10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/configuration/FrontendContent.java" %}}FrontendContent.java{{% /github %}}
 {{< highlight go "" >}}
 package io.pelle.todo.configuration;
 

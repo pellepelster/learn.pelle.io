@@ -49,10 +49,11 @@ ARGV.each do|filename|
 
     puts "inserting file '#{insert_filename}' into #{filename}"
 
+    insert_filename.slice!(ARTEFACTS_DIR)
     file_lines=[]
     file_lines.push({ content: "{{% github href=\"#{insert_filename}\" %}}#{File.basename insert_filename}{{% /github %}}\n" })
     file_lines.push({ content: "{{< highlight go \"\" >}}\n" })
-    file_lines.push(*read_lines(insert_filename))
+    file_lines.push(*read_lines("#{ARTEFACTS_DIR}/#{insert_filename}"))
     file_lines.push({ content: "{{< / highlight >}}\n" })
 
     lines[file[:start]+1...file[:end]]=file_lines
