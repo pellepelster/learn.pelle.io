@@ -31,21 +31,25 @@ function generate_and_insert_snippets() {
 
 }
 
-function task_generate {
-  ensure_environment
-
-  echo "running steps runfiles for '${STEPS_DIR}'"
+function call_runnfiles {
+  local task=${1:-}
+  echo "running task ${task} for runfiles in '${STEPS_DIR}'"
   local last_step_dir=''
   for RUN_FILE in $(find ${STEPS_DIR} -name run | sort); do
     local step_dir=$(dirname ${RUN_FILE})
-
     prefix=$(realpath "${STEPS_DIR}")
     step_dir=${step_dir#${prefix}/}
 
     echo "running step runfile '${RUN_FILE}'"
-    STEPS_DIR=${STEPS_DIR} LAST_STEP_DIR=${last_step_dir} STEP_DIR=${step_dir} TODO_PROJECT_DIR=${TODO_PROJECT_DIR} ARTEFACTS_DIR=$(readlink -f ${ARTEFACTS_DIR}) ${RUN_FILE} generate
+    STEPS_DIR=${STEPS_DIR} LAST_STEP_DIR=${last_step_dir} STEP_DIR=${step_dir} TODO_PROJECT_DIR=${TODO_PROJECT_DIR} ARTEFACTS_DIR=$(readlink -f ${ARTEFACTS_DIR}) ${RUN_FILE} ${task}
     last_step_dir=${step_dir}
   done
+}
+
+function task_generate {
+  ensure_environment
+
+  call_runnfiles "generate"
 
   generate_and_insert_snippets
 
@@ -56,9 +60,7 @@ function task_generate {
       sed -i '/snippet:/d' ${source_file}
     done
   )
-
 }
-
 
 function ensure_environment {
   if [ ! -d ${ARTEFACTS_DIR} ]; then
@@ -79,10 +81,7 @@ function ensure_full_project_is_buildable {
 
 function task_test {
   ensure_full_project_is_buildable
-  echo "testing all artefacts"
-  for RUN_FILE in $(find ${STEPS_DIR} -name run); do
-    TODO_PROJECT_DIR=${TODO_PROJECT_DIR} ARTEFACTS_DIR=${ARTEFACTS_DIR} ${RUN_FILE} test
-  done
+  call_runnfiles "test"
 }
 
 function task_build {
