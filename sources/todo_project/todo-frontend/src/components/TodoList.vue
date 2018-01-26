@@ -1,7 +1,5 @@
 <template>
-
   <div class="container" style="width: 60%;">
-
     <transition name="fade">
       <div class="alert alert-danger" role="alert" v-for="error in errors">
         {{ error }}
@@ -9,31 +7,24 @@
     </transition>
 
     <div class="row">
-      <div class="col-sm">
-        <h1>Todos</h1>
+      <div class="col">
+        <h1 class="text-center">Todos</h1>
       </div>
     </div>
-    <div class="row">
-      <div class="col-sm">
-        <div class="alert alert-secondary" role="alert">
-          <input type="text" class="form-control" v-model="newTodo" v-on:keyup.13="addTodo">
-        </div>
+    <div class="row alert alert-secondary" role="alert">
+      <div class="col-12">
+        <input type="text" class="form-control" v-model="newTodo" v-on:keyup.13="addTodo">
       </div>
     </div>
-    <div class="row">
-      <div class="col-sm">
-        <h1></h1>
+    <div class="row alert alert-primary align-items-center" role="alert" v-for="(todo, index) in todos" :key="todo.id">
+      <div class="col-11">
+        <span v-show="!todo.edit" v-on:click="toggleEdit(index, todo)">{{todo.description}}</span>
+        <input type="text" ref="inputs" class="form-control" v-model="todo.description" v-show="todo.edit" v-on:blur="saveEdit(index, todo)">
       </div>
-    </div>
-    <div class="row" v-for="(todo, index) in todos" :key="todo.id">
-      <div class="col-sm">
-        <div class="alert alert-primary clearfix" role="alert">
-
-          <span  v-show="!todo.edit" v-on:click="toggleEdit(index, todo)">{{todo.description}}</span>
-          <input type="text" ref="inputs" class="form-control" v-model="todo.description" v-show="todo.edit" v-on:blur="saveEdit(index, todo)">
-
-          <button v-on:click="deleteTodo(todo)" type="button" class="float-right btn btn-outline-danger">x</button>
-        </div>
+      <div class="col-1">
+        <button v-on:click="deleteTodo(todo)" type="button" class="btn btn-outline-danger">
+          <i class="fa fa-trash-o" aria-hidden="true"></i>
+        </button>
       </div>
     </div>
   </div>
