@@ -131,7 +131,7 @@ The last step is to add the resulting jar to a [Gradle configuration named](http
 As the backend is already built with Gradle we only need some minor modifications. The `spring-boot-gradle-plugin` we are using already provides a task that creates a fat jar file containing all dependencies needed to run the application. To also serve that static files for the frontend we need to add a dependency to to frontend build we just created:
 
 <!-- snippet:frontend_backend_dependency -->
-{{% github href="10_basic/30_deployment/todo-server/build.gradle#L26-L39" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/30_deployment/todo-server/build.gradle#L26-L38" %}}build.gradle{{% /github %}}
 {{< highlight go "" >}}
 dependencies {
     compile('com.google.guava:guava:23.6-jre')
@@ -139,13 +139,12 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-web:1.5.9.RELEASE')
     compile('org.springframework.boot:spring-boot-starter-data-jpa:1.5.9.RELEASE')
 
-    testCompile('org.springframework.boot:spring-boot-test')
-    testCompile("org.springframework.boot:spring-boot-starter-test")
-    testCompile("com.jayway.jsonpath:json-path:2.2.0")
-    testCompile("com.jayway.jsonpath:json-path-assert:2.2.0")
+    testCompile('org.springframework.boot:spring-boot-starter-test:1.5.9.RELEASE')
+    testCompile('com.jayway.jsonpath:json-path-assert:2.2.0')
     testCompile('org.springframework:spring-test')
     testCompile('junit:junit')
-//    runtime project(path: ':todo-frontend', configuration: 'frontend')
+
+    runtime project(path: ':todo-frontend', configuration: 'frontend')
 }
 {{< / highlight >}}
 <!-- /snippet:frontend_backend_dependency -->
