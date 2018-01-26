@@ -113,7 +113,7 @@ After=syslog.target
 
 [Service]
 User=todo
-ExecStart=/todo/${var.application_jar}
+ExecStart=/todo/${application_jar}
 SuccessExitStatus=143
 
 [Install]
@@ -196,7 +196,81 @@ resource "aws_instance" "todo_instance" {
 Now that we finally have a definition for the application instance, lets again see what Terraform would do if would ask it to apply the configuration.
 
 ```
-terraform plan -var 'application_jar=todo-0.1.0.jar'
+$ terraform plan -var 'application_jar=todo-0.0.1.jar'
 
-XXX plan output XXX
+Refreshing Terraform state in-memory prior to plan...
+The refreshed state will be used to calculate this plan, but will not be
+persisted to local or remote state storage.
+
+data.template_file.todo_systemd_service: Refreshing state...
+data.aws_ami.amazon_linux2_ami: Refreshing state...
+
+------------------------------------------------------------------------
+
+An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  + aws_instance.todo_instance
+      id:                                          <computed>
+      ami:                                         "ami-1b2bb774"
+      associate_public_ip_address:                 <computed>
+      availability_zone:                           <computed>
+      ebs_block_device.#:                          <computed>
+      ephemeral_block_device.#:                    <computed>
+      instance_state:                              <computed>
+      instance_type:                               "t2.micro"
+      ipv6_address_count:                          <computed>
+      ipv6_addresses.#:                            <computed>
+      key_name:                                    "${aws_key_pair.todo_keypair.id}"
+      network_interface.#:                         <computed>
+      network_interface_id:                        <computed>
+      placement_group:                             <computed>
+      primary_network_interface_id:                <computed>
+      private_dns:                                 <computed>
+      private_ip:                                  <computed>
+      public_dns:                                  <computed>
+      public_ip:                                   <computed>
+      root_block_device.#:                         <computed>
+      security_groups.#:                           <computed>
+      source_dest_check:                           "true"
+      subnet_id:                                   "${aws_subnet.public_subnet.id}"
+      tenancy:                                     <computed>
+      volume_tags.%:                               <computed>
+      vpc_security_group_ids.#:                    <computed>
+
+  + aws_internet_gateway.todo_internet_gateway
+      id:                                          <computed>
+      vpc_id:                                      "${aws_vpc.todo_vpc.id}"
+
+  [...]
+
+  + aws_vpc.todo_vpc
+      id:                                          <computed>
+      assign_generated_ipv6_cidr_block:            "false"
+      cidr_block:                                  "10.0.0.0/16"
+      default_network_acl_id:                      <computed>
+      default_route_table_id:                      <computed>
+      default_security_group_id:                   <computed>
+      dhcp_options_id:                             <computed>
+      enable_classiclink:                          <computed>
+      enable_classiclink_dns_support:              <computed>
+      enable_dns_hostnames:                        "true"
+      enable_dns_support:                          "true"
+      instance_tenancy:                            <computed>
+      ipv6_association_id:                         <computed>
+      ipv6_cidr_block:                             <computed>
+      main_route_table_id:                         <computed>
+
+
+Plan: 9 to add, 0 to change, 0 to destroy.
+
+------------------------------------------------------------------------
+
+Note: You didn't specify an "-out" parameter to save this plan, so Terraform
+can't guarantee that exactly these actions will be performed if
+"terraform apply" is subsequently run.
+
 ```
