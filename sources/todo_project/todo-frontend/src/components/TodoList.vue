@@ -25,12 +25,13 @@
         <h1></h1>
       </div>
     </div>
-    <div class="row" v-for="todo in todos" :key="todo.uuid">
+    <div class="row" v-for="(todo, index) in todos" :key="todo.id">
       <div class="col-sm">
         <div class="alert alert-primary clearfix" role="alert">
-        <span class="float-left  align-baseline">
-          {{ todo.description }}
-        </span>
+
+          <span  v-show="!todo.edit" v-on:click="toggleEdit(index, todo)">{{todo.description}}</span>
+          <input type="text" ref="inputs" class="form-control" v-model="todo.description" v-show="todo.edit" v-on:blur="saveEdit(index, todo)">
+
           <button v-on:click="deleteTodo(todo)" type="button" class="float-right btn btn-outline-danger">x</button>
         </div>
       </div>
@@ -40,6 +41,7 @@
 
 <script>
 import {HTTP} from './http'
+import Vue from 'vue'
 
 export default {
   name: 'TodoList',
@@ -51,6 +53,24 @@ export default {
     }
   },
   methods: {
+    toggleEdit (index, todo) {
+      todo.edit = !todo.edit
+
+      if (todo.edit) {
+        Vue.nextTick(() => {
+          this.$refs.inputs[index].focus()
+        })
+      }
+    },
+    saveEdit (index, todo) {
+      HTTP.put('todos/' + todo.id + '/updateDescription', this.$refs.inputs[index].value)
+      .then(response => {
+        this.toggleEdit(index, todo)
+      })
+      .catch(error => {
+        this.addError(error)
+      })
+    },
     addError (error) {
       this.errors.push(error)
       setTimeout(() => {
@@ -60,7 +80,7 @@ export default {
     },
     updateList () {
       HTTP.get('todos').then(response => {
-        this.todos = response.data
+        this.todos = response.data.map((todo) => { return { 'id': todo.id, 'description': todo.description, 'edit': false } })
       })
       .catch(e => {
         this.errors.push(e)
@@ -80,7 +100,7 @@ export default {
       this.newTodo = ''
     },
     deleteTodo: function (todo) {
-      HTTP.delete('todos/' + todo.uuid).then(response => {
+      HTTP.delete('todos/' + todo.id).then(response => {
         var index = this.todos.indexOf(todo)
         this.todos.splice(index, 1)
       })
