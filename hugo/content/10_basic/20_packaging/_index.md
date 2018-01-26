@@ -131,32 +131,34 @@ The last step is to add the resulting jar to a [Gradle configuration named](http
 As the backend is already built with Gradle we only need some minor modifications. The `spring-boot-gradle-plugin` we are using already provides a task that creates a fat jar file containing all dependencies needed to run the application. To also serve that static files for the frontend we need to add a dependency to to frontend build we just created:
 
 <!-- snippet:frontend_backend_dependency -->
-{{% github href="10_basic/30_deployment/todo-server/build.gradle#L22-L31" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/30_deployment/todo-server/build.gradle#L26-L39" %}}build.gradle{{% /github %}}
 {{< highlight go "" >}}
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-web')
+    compile('com.google.guava:guava:23.6-jre')
+    compile('org.apache.derby:derby:10.14.1.0')
+    compile('org.springframework.boot:spring-boot-starter-web:1.5.9.RELEASE')
+    compile('org.springframework.boot:spring-boot-starter-data-jpa:1.5.9.RELEASE')
+
     testCompile('org.springframework.boot:spring-boot-test')
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("com.jayway.jsonpath:json-path:2.2.0")
     testCompile("com.jayway.jsonpath:json-path-assert:2.2.0")
     testCompile('org.springframework:spring-test')
     testCompile('junit:junit')
-    runtime project(path: ':todo-frontend', configuration: 'frontend')
+//    runtime project(path: ':todo-frontend', configuration: 'frontend')
 }
 {{< / highlight >}}
 <!-- /snippet:frontend_backend_dependency -->
 
 Now that the static `frontend.jar` is packaged in our application we only have to tell Spring Boot to serve this files by adding a `ResourceHandler` that matches all HTTP request and tries to serve them with the static files from the `frontend-jar` we just added as a dependency:
 
-<!-- file:10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/FrontendContent.java -->
-{{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/FrontendContent.java" %}}FrontendContent.java{{% /github %}}
+<!-- file:10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/configuration/FrontendContent.java -->
+{{% github href="/home/pelle/git/learn.pelle.io/artefacts/10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/configuration/FrontendContent.java" %}}FrontendContent.java{{% /github %}}
 {{< highlight go "" >}}
-package io.pelle.todo;
+package io.pelle.todo.configuration;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -169,12 +171,12 @@ class FrontendContent extends WebMvcConfigurerAdapter {
   }
 }
 {{< / highlight >}}
-<!-- /file:10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/FrontendContent.java -->
+<!-- /file:10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/configuration/FrontendContent.java -->
 
 As a finishing touch we set the `executable` attribute of the Spring Boot gradle plugin to `true` makes the JAR file directly executable by adding a start script in front of the JAR file.
 
 <!-- snippet:backend_executable -->
-{{% github href="10_basic/30_deployment/todo-server/build.gradle#L13-L15" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/30_deployment/todo-server/build.gradle#L17-L19" %}}build.gradle{{% /github %}}
 {{< highlight go "" >}}
 springBoot {
     executable = true
