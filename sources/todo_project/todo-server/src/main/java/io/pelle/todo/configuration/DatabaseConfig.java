@@ -1,11 +1,8 @@
 package io.pelle.todo.configuration;
 
 import io.pelle.todo.TodoApplication;
-<<<<<<< HEAD:sources/todo_project/todo-server/src/main/java/io/pelle/todo/configuration/DatabaseConfig.java
-=======
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
->>>>>>> add sql storage:sources/todo_project/todo-server/src/main/java/io/pelle/todo/configuration/DatabaseConfig.java
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;

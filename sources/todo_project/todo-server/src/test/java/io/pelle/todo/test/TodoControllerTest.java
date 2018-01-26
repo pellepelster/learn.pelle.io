@@ -14,11 +14,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.pelle.todo.TodoApplication;
-import io.pelle.todo.TodoStorage;
-import io.pelle.todo.controller.TodoController;
-import io.pelle.todo.dto.Todo;
-import org.junit.Before;
 import io.pelle.todo.TodoRepository;
 import io.pelle.todo.controller.TodoController;
 import io.pelle.todo.dto.Todo;
@@ -32,33 +27,11 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Example;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.calls;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(TodoController.class)
@@ -72,7 +45,7 @@ public class TodoControllerTest {
   @Test
   public void testListTodos() throws Exception {
     UUID uuid = UUID.randomUUID();
-		when(todoStorage.findAll()).thenReturn(Arrays.asList(new Todo(uuid.toString(), "todo 1", false)));
+    when(todoStorage.findAll()).thenReturn(Arrays.asList(new Todo(uuid, "todo 1", false)));
 
     mvc.perform(get("/api/todos").accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -81,8 +54,8 @@ public class TodoControllerTest {
         .andExpect(jsonPath("$[0].description", is("todo 1")))
         .andExpect(jsonPath("$[0].complete", is(false)));
 
-		 verify(todoStorage, times(1)).findAll();
-		 verifyNoMoreInteractions(todoStorage);
+    verify(todoStorage, times(1)).findAll();
+    verifyNoMoreInteractions(todoStorage);
   }
 
   @Test
@@ -104,7 +77,7 @@ public class TodoControllerTest {
         .andExpect(jsonPath("$.description", is("todo 2")))
         .andExpect(jsonPath("$.complete", is(false)));
 
-		verify(todoStorage, times(1)).save(Mockito.any(Todo.class));
+    verify(todoStorage, times(1)).save(Mockito.any(Todo.class));
 
     ArgumentCaptor<Todo> argument = ArgumentCaptor.forClass(Todo.class);
     verify(todoStorage).save(argument.capture());
@@ -146,8 +119,6 @@ public class TodoControllerTest {
   public void testMarkCompleted() throws Exception {
     UUID uuid = UUID.randomUUID();
 
-    when(todoStorage.findOne(any(Example.class))).thenReturn(Optional.of(new Todo(uuid.toString(), "xxx", false)));
-
     when(todoStorage.findById(any(UUID.class)))
         .thenReturn(Optional.of(new Todo(uuid, "xxx", false)));
     when(todoStorage.save(any(Todo.class))).thenReturn(new Todo(uuid, "xxx", true));
@@ -165,13 +136,6 @@ public class TodoControllerTest {
   public void testMarkCompletedWithInvalidUUID() throws Exception {
     UUID uuid = UUID.randomUUID();
 
-    when(todoStorage.findOne(any(Example.class))).thenReturn(null);
-
-    mvc.perform(put("/api/todos/{uuid}/markCompleted", uuid.toString()))
-        .andExpect(status().isNotFound());
-    verify(todoStorage, times(1)).findOne(any(Example.class));
-  }
-
     when(todoStorage.findById(any(UUID.class))).thenReturn(Optional.empty());
 
     mvc.perform(put("/api/todos/{uuid}/markCompleted", uuid.toString()))
@@ -185,11 +149,6 @@ public class TodoControllerTest {
   public void testUpdateDescription() throws Exception {
     UUID uuid = UUID.randomUUID();
 
-    when(todoStorage.findOne(any(Example.class))).thenReturn(new Todo(uuid.toString(), "xxx", false));
-    when(todoStorage.save(any(Todo.class))).thenReturn(new Todo(uuid.toString(), "todo 3", true));
-
-    mvc.perform(put("/api/todos/{id}/updateDescription", uuid.toString())
-        .content("todo 3"))
     when(todoStorage.findById(any(UUID.class)))
         .thenReturn(Optional.of(new Todo(uuid, "xxx", false)));
     when(todoStorage.save(any(Todo.class))).thenReturn(new Todo(uuid, "todo 3", true));
@@ -210,13 +169,11 @@ public class TodoControllerTest {
   public void testUpdateDescriptionWithInvalidUUID() throws Exception {
     UUID uuid = UUID.randomUUID();
 
-    when(todoStorage.findOne(any(Example.class))).thenReturn(new Todo(uuid.toString(), "xxx", false));
     when(todoStorage.findById(any(UUID.class))).thenReturn(Optional.empty());
 
     mvc.perform(put("/api/todos/{id}/updateDescription", uuid.toString()).content("todo 3"))
         .andExpect(status().isNotFound());
 
-    verifyZeroInteractions(todoStorage);
     verify(todoStorage, times(1)).findById(eq(uuid));
     verifyNoMoreInteractions(todoStorage);
   }
