@@ -1,4 +1,4 @@
-baseURL = "http://example.org/"
+baseURL = "https://learn.pelle.io/"
 languageCode = "en-us"
 title = "learn.pelle.io"
 staticDir = ["static"]
