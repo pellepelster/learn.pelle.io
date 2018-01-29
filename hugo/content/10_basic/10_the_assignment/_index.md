@@ -11,20 +11,19 @@ Congratulations, you just landed your first job at Todo Inc. After endless night
 ## Project Files
 
 ## Backend
-
 Lets start by looking at what we got. The backend is implemented using the Spring Boot framework and luckily the responsible developer wrote a Gradle file so to start the backend we just have to run:
 
 ```
 $ cd todo-backend
-$ ./gradlew run
+$ ./gradlew bootRun
 ```
 
 {{% notice tip %}}
-The build.gradle file includes the Idea (`apply plugin: 'idea'`) and the Eclipse plugin (`apply plugin: 'eclipse'`) which allows us to create Idea/Eclipse project files by calling `./gradlew idea/eclipse` and then opening the project directly in the IDE creating a hassle free devloper experience.
+The build.gradle file includes the Idea (`apply plugin: 'idea'`) and the Eclipse plugin (`apply plugin: 'eclipse'`) which allows us to create IntelliJ or Eclipse project files by calling `./gradlew idea` respectively `./gradlew eclipse`. Afterwards we can 
+ open the project directly in our favorite IDE creating a hassle free developer experience.
 {{% /notice %}}
 
 ## Frontend
-
 The frontend team has gifted is with a a Vue.js based frontend that also contains some basic unit tests. It is built and bundled using webpack, so to start the frontend locally just change into the the frontend project directory, and run npm:
 
 ```
@@ -35,7 +34,7 @@ DONE  Compiled successfully in 6945ms
 I  Your application is running here: http://localhost:8080
 ```
 
-The frontend is now available at http://localhost:8080, and it is expecting a running backend at http://localhost:8081.
+The frontend is now available at http://localhost:8080, and it is expecting a running backend at http://localhost:9090.
 
 ![Screenshot](http://via.placeholder.com/800x600)
 

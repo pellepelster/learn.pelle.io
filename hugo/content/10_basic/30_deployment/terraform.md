@@ -45,6 +45,7 @@ suggested below.
 Terraform has been successfully initialized!
 [...]
 ```
+
 {{% notice tip %}}
 `terraform init` by default loads the latest version of a plugin. This may lead to problems if for example plugins introduce breaking changes, in that case it is possible to pin the version of a plugin by specifying a version number:
 `version = "~> 1.0`

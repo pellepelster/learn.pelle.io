@@ -182,3 +182,33 @@ springBoot {
 }
 {{< / highlight >}}
 <!-- /snippet:backend_executable -->
+
+
+## Final assembly
+Now that both front- and backend are build by gradle and have appropriate dependencies we can run `./gradlew assemble` to create a single executable jar out of it:
+
+```
+$ ./gradlew assemble
+[...]
+BUILD SUCCESSFUL in 11s
+``` 
+
+The result can directly be executed from command line:
+
+```
+$ ./todo-server/build/libs/todo-0.0.1.jar
+
+2018-01-29 21:29:27.684  INFO 32609 --- [           main] io.pelle.todo.TodoApplication            : Starting TodoApplication on fry with PID 32609 (/home/pelle/git/learn.pelle.io/artefacts/10_basic/20_packaging/todo-server/build/libs/todo-0.0.1.jar started by pelle in /home/pelle/git/learn.pelle.io/artefacts/10_basic/20_packaging/todo-server/build/libs)
+2018-01-29 21:29:27.690  INFO 32609 --- [           main] io.pelle.todo.TodoApplication            : No active profile set, falling back to default profiles: default
+2018-01-29 21:29:27.856  INFO 32609 --- [           main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@5a2e4553: startup date [Mon Jan 29 21:29:27 CET 2018]; root of context hierarchy
+2018-01-29 21:29:31.035  INFO 32609 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 9090 (http)
+
+[...]
+
+2018-01-29 21:29:36.776  INFO 32609 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-01-29 21:29:36.879  INFO 32609 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 9090 (http)
+2018-01-29 21:29:36.893  INFO 32609 --- [           main] io.pelle.todo.TodoApplication            : Started TodoApplication in 9.827 seconds (JVM running for 10.612)
+
+```
+
+The application is now available at [http://localhost:8080](http://localhost:8080).
