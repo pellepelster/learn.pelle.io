@@ -32,6 +32,7 @@ resource "aws_security_group" "todo_instance_ssh_security_group" {
   }
 }
 
+# snippet:deploy_aws_security_group_http
 resource "aws_security_group" "todo_instance_http_security_group" {
   name   = "todo_instance_http_security_group"
   vpc_id = "${aws_vpc.todo_vpc.id}"
@@ -50,6 +51,7 @@ resource "aws_security_group" "todo_instance_http_security_group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+# /snippet:deploy_aws_security_group_http
 
 # snippet:deploy_aws_instance_systemd_unit
 data "template_file" "todo_systemd_service" {
@@ -115,6 +117,8 @@ resource "aws_instance" "todo_instance" {
 
 }
 
+# snippet:deploy_aws_instance_output
 output "instance_fqdn" {
   value = "${aws_instance.todo_instance.public_dns}"
 }
+# /snippet:deploy_aws_instance_output

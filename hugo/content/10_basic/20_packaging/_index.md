@@ -24,7 +24,7 @@ $ mv gradle ../
 ```
 
 {{% notice tip %}}
-The Gradle wrapper bootstraps the Gradle environment needed for the build and remove the burden to install Gradle from the user. This helps to make the build more portable and less dependent on the local setup.
+The Gradle wrapper bootstraps the Gradle environment needed for the build and removes the burden to install Gradle from the user. This helps to make the build more portable and less dependent on the local setup.
 {{% /notice %}}
 
 In a multi project we need a file `settings.gradle` which tells Gradle what sub-projects are part of the build:
@@ -57,6 +57,7 @@ allprojects {
 
 
 ### Package the frontend
+
 As already mentioned it is vitally important for the build not to rely on any local prerequistes on the machine that executes the build. Keep in mind that the build has to work on your machine, your coworkers machine or in a continus integration environment. Luckily for us a [node.js plugin](https://github.com/srs/gradle-node-plugin) for Gradle already exists that creates a node.js environment for us, we just have to apply the plugin from the public Gradle maven repository:
 
 <!-- snippet:frontend_nodejs_plugin_dependency -->
@@ -78,7 +79,7 @@ apply plugin: 'com.moowork.node'
 {{< / highlight >}}
 <!-- /snippet:frontend_nodejs_plugin_dependency -->
 
-The plugin can be configured to a specific node.js/npm version:
+The plugin can be configured to use a specific node.js/npm version:
 
 <!-- snippet:frontend_nodejs_plugin_configuration -->
 {{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L15-L21" %}}build.gradle{{% /github %}}
@@ -106,7 +107,7 @@ frontendBuild.dependsOn('npmInstall')
 {{< / highlight >}}
 <!-- /snippet:frontend_nodejs_build -->
 
-and package the resulting file in a jar file:
+and package the resulting filses from the `dist` folder in a jar file:
 
 <!-- snippet:frontend_nodejs_jar -->
 {{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L29-L36" %}}build.gradle{{% /github %}}
@@ -122,13 +123,14 @@ frontendJar.dependsOn('frontendBuild')
 {{< / highlight >}}
 <!-- /snippet:frontend_nodejs_jar -->
 
-The last step is to add the resulting jar to a [Gradle configuration named](https://docs.gradle.org/current/userguide/dependency_management.html#sub:configurations) `frontend` so dependent projects (in our case the frontend-server project) can include the frontend artifacts in their build cycle:
+The last step is to add the resulting jar to a [Gradle configuration](https://docs.gradle.org/current/userguide/dependency_management.html#sub:configurations) named `frontend` so dependent projects (in our case the frontend-server project) can include the frontend artifacts in their build cycle:
 
 <!-- snippet:frontend_nodejs_gradle_config -->
+dsadas
 <!-- /sippet:frontend_nodejs_gradle_config -->
 
 ### Package the backend
-As the backend is already built with Gradle we only need some minor modifications. The `spring-boot-gradle-plugin` we are using already provides a task that creates a fat jar file containing all dependencies needed to run the application. To also serve that static files for the frontend we need to add a dependency to to frontend build we just created:
+As the backend is already built with Gradle we only need some minor modifications. The `spring-boot-gradle-plugin` we are using already provides a task that creates a fat jar file containing all dependencies needed to run the application. To also serve the static files for the frontend we need to add a dependency to the frontend build we just created:
 
 <!-- snippet:frontend_backend_dependency -->
 {{% github href="10_basic/30_deployment/todo-server/build.gradle#L26-L38" %}}build.gradle{{% /github %}}
@@ -149,7 +151,7 @@ dependencies {
 {{< / highlight >}}
 <!-- /snippet:frontend_backend_dependency -->
 
-Now that the static `frontend.jar` is packaged in our application we only have to tell Spring Boot to serve this files by adding a `ResourceHandler` that matches all HTTP request and tries to serve them with the static files from the `frontend-jar` we just added as a dependency:
+Now that the static `frontend.jar` is available on the classpath of our application we only have to tell Spring Boot to serve this files by adding a `ResourceHandler` that matches all HTTP request and tries to serve them with the static files from the `frontend-jar` we just added as a dependency:
 
 <!-- file:10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/configuration/FrontendContent.java -->
 {{% github href="/10_basic/20_packaging/todo-server/src/main/java/io/pelle/todo/configuration/FrontendContent.java" %}}FrontendContent.java{{% /github %}}
@@ -185,6 +187,7 @@ springBoot {
 
 
 ## Final assembly
+
 Now that both front- and backend are build by gradle and have appropriate dependencies we can run `./gradlew assemble` to create a single executable jar out of it:
 
 ```
@@ -211,4 +214,4 @@ $ ./todo-server/build/libs/todo-0.0.1.jar
 
 ```
 
-The application is now available at [http://localhost:8080](http://localhost:8080).
+The application is now available at [http://localhost:9090](http://localhost:9090).

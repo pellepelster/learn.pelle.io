@@ -11,14 +11,12 @@
 - vue.js frontend
 - spring boot backend
 - db abstraction layer with in-memory db (migrate to real rds persistence at some point)
-
+- packer
 
 # open questions
-
 - figure out where to introduce docker/testing?
 - docker would need registry -> overhead maybe to big/use aws ecr registry?
 - testing infra vs. docker images
-
 
 # track basic
 - create initial setup, after this track it should be possible to go into any direction

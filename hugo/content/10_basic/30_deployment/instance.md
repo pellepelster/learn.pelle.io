@@ -9,9 +9,9 @@ showHeaderLink: true
 Now that we have a working VPC with an appropriate ip subnet to deploy new instances in, we will start with our first EC2 instance. Before we start we only need a few prerequisites, the first one being a disk with an operating system image to boot the instance.
 
 ## AMI
-In AWS terms those disks are called [AMIs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html) (Amazon Machine Images) that apart from some meta data contain the Calcutta system image that is used as a template for the root disk of our instance when we start it.
+In AWS terms those disks are called [AMIs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html) (Amazon Machine Images) that apart from some meta data contain the system image that is used as a template for the root disk of our instance when we start it.
 For now we will use a prebuild AMI from Amazon based on Amazon Linux. Because those images are regularly updated we want to make sure to always use the latest version of this AMI.
-Terraform offers the concept of data providers that allow us to fetch oder compute information that is only available outside our Terraform configuration. In our case we use the `aws_ami` data source that lets us filter the list of available AMIs. Because AMIs always belong to an AWS account we have to specify from which account we want to pull the AMI and also how the name of the AMI looks like `^amzn2-ami-hvm-`. Because the `name_regex` will match multiple AMIs (`amzn2-ami-hvm-2017-07-02`, `amzn2-ami-hvm-2017-07-03`, ...) we set `most_recent` to true so only the latest image is returned.
+Terraform offers the concept of data providers that allow us to fetch or compute information that is only available outside our Terraform configuration. In our case we use the `aws_ami` data source that lets us filter the list of available AMIs. Because AMIs always belong to an AWS account we have to specify from which account we want to pull the AMI and also how the name of the AMI looks like (in our case `^amzn2-ami-hvm-`). Because the `name_regex` will match multiple AMIs (`amzn2-ami-hvm-2017-07-02`, `amzn2-ami-hvm-2017-07-03`, ...) we set `most_recent` to true so only the latest image is returned.
 
 <!-- snippet:deploy_aws_ami -->
 {{% github href="10_basic/30_deployment/deploy/todo.tf#L1-L5" %}}todo.tf{{% /github %}}
@@ -25,7 +25,7 @@ data "aws_ami" "amazon_linux2_ami" {
 <!-- /snippet:deploy_aws_ami -->
 
 ## SSH key
-Of course we not only want to start an instance but we also may need to login to the running instance. AWS EC2 instances that are configured using [cloud-init](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-linux-ami-basics.html#amazon-linux-cloud-init) that lets us add arbitrary actions that will be executed on instance boot. As the installation of SSH keys is a rather common task cloud-init provides an abstraction for this task, that is exposed via AWS and therefore usable in Terraform. We will use a local public ssh key and upload it to our AWS account (if you do net have yet an SSH keypair, have a look [here](https://www.ssh.com/ssh/keygen/), on how to create one).
+Of course we not only want to start an instance but we also may need to login to the running instance to debug problems. AWS EC2 instances that are configured using [cloud-init](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-linux-ami-basics.html#amazon-linux-cloud-init) that lets us add arbitrary actions that will be executed on instance boot. As the installation of SSH keys is a rather common task cloud-init provides an abstraction for this task, that is exposed via AWS and therefore usable in Terraform. We will use a local public ssh key and upload it to our AWS account (if you do not have yet an SSH keypair, have a look [here](https://www.ssh.com/ssh/keygen/), on how to create one).
 As we have already seen, Terraform offers a interpolation functionality, that lets us reference other Terraform resources. Furthermore it also provides various other functions, for example the `file` function that provides access to files from the local file system. For the SSH key upload we use the `file` function to read the content of the SSH public key and upload it to AWS.
 
 <!-- snippet:deploy_aws_key -->
@@ -38,7 +38,42 @@ resource "aws_key_pair" "todo_keypair" {
 {{< / highlight >}}
 <!-- /snippet:deploy_aws_key -->
 
+## Network Security
+
+Although t VPC we created beforehand provides total network isolation from other VPCs we can further refine the access to our instance by creating firewall rules which in AWS terms are called security group.
+When comparing these security groups to traditional firewall rules there is a small but important difference. Firewall rules normally operate on a ip subnet level, for example you could say "please allow all traffic to subnet 192.168.1.0/24 from host 10.12.34.5". Security groups on the other hand are a virtual construct that operates on instance level, for example "please allow all traffic to this machine coming from 10.4.1.0/24". This concept abstracts away the problems we would otherwise encounter when we start to distribute our subnets across multiple availability zones have a look at this [article](https://blog.rackspace.com/network-segregation-aws-2) to get a short overview of VPC networking. 
+
+For our application that means that we have to define some security groups to allow access from the outside as the default of course is to deny any traffic.
+
+<!-- snippet:deploy_aws_security_group_http -->
+{{% github href="10_basic/30_deployment/deploy/todo.tf#L31-L48" %}}todo.tf{{% /github %}}
+{{< highlight go "" >}}
+resource "aws_security_group" "todo_instance_http_security_group" {
+  name   = "todo_instance_http_security_group"
+  vpc_id = "${aws_vpc.todo_vpc.id}"
+
+  ingress {
+    from_port   = 9090
+    to_port     = 9090
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+{{< / highlight >}}
+<!-- /snippet:deploy_aws_security_group_http -->
+
+We allow all incoming traffic from anywhere to port 9090 and for do not impose any limitations to the outgoing traffic.
+
+
 ## Application Instance
+
 Now we have finally reached the point where we are able to launch and EC2 instance and provision it with our application. For `ami`, `subnet_id` and `key_name` we use the already created resources and reference them with their id. As `instance_type` we start with `t2.micro` which translates to a single core machine with 1Gb of memory. Have a look [here](https://aws.amazon.com/ec2/instance-types/) for a complete list of available instance types.
 
 <!-- snippet:deploy_aws_instance -->
@@ -97,7 +132,7 @@ resource "aws_instance" "todo_instance" {
 {{< / highlight >}}
 <!-- /snippet:deploy_aws_instance_jar -->
 
-Now that the application jar is uploaded we have to think how we start the application. We chose an Amazon Linux 2 based image for our instance that comes with [systemd](https://www.freedesktop.org/wiki/Software/systemd/) support by default that replaces the traditional way of starting services.
+Now that the application jar is uploaded we have to think how we start the application. We chose an Amazon Linux 2 based image for our instance that comes with [systemd](https://www.freedesktop.org/wiki/Software/systemd/) support by default, replacing the traditional way of starting services.
 
 > systemd is an init system used in Linux distributions to bootstrap the user space and to manage system processes after booting. It is a replacement for the UNIX System V and Berkeley Software Distribution init systems.
 
@@ -193,7 +228,18 @@ resource "aws_instance" "todo_instance" {
 {{< / highlight >}}
 <!-- /snippet:deploy_aws_instance_install -->
 
-Now that we finally have a definition for the application instance, lets again see what Terraform would do if would ask it to apply the configuration.
+Now we are almost ready to start the instance apart from the fact that we will have no idea how to reach the instance as soon at is started as we do not know what ip it will have after start. Luckily terraform not only has variables that serve as input for terraform configurations, but also outputs that will show any data that is exposed by terraform resources. We ware interested in the public dns address of the created instance, so we expose this information with the output named `instance_fqdn`. The result will be a generic hostname in the format `${id}.eu-central-1.compute.amazonaws.com` in later chapter we will learn to hide this information behind proper domain names. 
+
+<!-- snippet:deploy_aws_instance_output -->
+{{% github href="10_basic/30_deployment/deploy/todo.tf#L104-L106" %}}todo.tf{{% /github %}}
+{{< highlight go "" >}}
+output "instance_fqdn" {
+  value = "${aws_instance.todo_instance.public_dns}"
+}
+{{< / highlight >}}
+<!-- /snippet:deploy_aws_instance_output -->
+
+Now that we finally have a definition for the application instance, lets again see what Terraform would do if would ask it to apply the configuration. Keep in mind that we now have to specify the name of the application jar on each run, as we did not provide a default for the variable.
 
 ```
 $ terraform plan -var 'application_jar=todo-0.0.1.jar'
@@ -274,3 +320,23 @@ can't guarantee that exactly these actions will be performed if
 "terraform apply" is subsequently run.
 
 ```
+
+We see that terraform wants to create all the resources we just defined, so we move forward and let terraform do its work by applying the configuration:
+
+```
+$ terraform apply -var 'application_jar=todo-0.0.1.jar'
+
+[...]
+
+aws_instance.todo_instance (remote-exec): Complete!
+aws_instance.todo_instance (remote-exec): Created symlink from /etc/systemd/system/multi-user.target.wants/todo.service to /etc/systemd/system/todo.service.
+aws_instance.todo_instance: Creation complete after 1m10s (ID: i-0d11d1515b77d6557)
+
+Apply complete! Resources: 9 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+instance_fqdn = ec2-35-158-106-80.eu-central-1.compute.amazonaws.com
+```
+
+Et voila, that configuration is applied and as we can see from the output `instance_fqdn` our application is happily humming along at http://${instance_fqdn}:9090.

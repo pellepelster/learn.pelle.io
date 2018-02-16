@@ -9,7 +9,8 @@ showHeaderLink: true
 We now have to choose which infrastructure as code software to use. When it comes to the sheer number of supported cloud providers [Terraform](https://www.terraform.io/) is the tool of our choice. All major cloud providers contribute up-to-date plugins that abstract their apis into the declarative Terraform configuration language which is based on the text based [HashiCorp configuration language (HCL)](https://github.com/hashicorp/hcl).
 
 ## Initial Setup
-First we have to tell Terraform which provider we are going to use, in our case the AWS provider using `eu-central-1` as the default region for alle created resources. In AWS terms a region translate to a datacenter where our resources are launched. It is important to keep in mind that not all AWS services are always available in all regions, also the prices may differ depending on the region, have a look [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html) for more in dpeth information about regions
+
+First we have to tell Terraform which provider we are going to use, in our case the AWS provider using `eu-central-1` as the default region for all created resources. In AWS terms a region translates to a datacenter where our resources are launched. It is important to keep in mind that not all AWS services are always available in all regions, also the prices may differ depending on the region, have a look [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html) for more in dpeth information about regions
 
 <!-- snippet:deploy_aws_provider -->
 {{% github href="10_basic/30_deployment/deploy/providers.tf#L1-L3" %}}providers.tf{{% /github %}}
@@ -52,7 +53,8 @@ Terraform has been successfully initialized!
 {{% /notice %}}
 
 ## Testing the setup
-As terraform needs to interact with the AWS api it obviously needs credentials. Like other AWS SDK based software the Terraform [AWS provider](https://www.terraform.io/docs/providers/aws/) has several methods to retrieve the needed credentials. We will inject the credentials via environment variables to avoid adding the secrets the the source file and accidentally committing them.
+
+As terraform needs to interact with the AWS api it obviously needs credentials. Like other AWS SDK based software the Terraform [AWS provider](https://www.terraform.io/docs/providers/aws/) has several methods to retrieve the needed credentials. We will inject the credentials via environment variables to avoid adding the secrets to the source file and accidentally committing them.
 
 For all following steps we always need the AWS secrets, have a look [here](https://docs.aws.amazon.com/general/latest/gr/managing-aws-access-keys.html) on how to create them for your AWS account.
 

@@ -25,7 +25,7 @@ resource "aws_vpc" "todo_vpc" {
 {{< / highlight >}}
 <!-- /snippet:deploy_aws_vpc -->
 
-Now we assign a public subnet to our VPC, this is where the servers we are about to will create live in. The attachment to our existing VPC is created via the attribute `vpc_id`, where the id of the previously defined VPC is referenced. The syntax for referencing resources in Terraform is `${TYPE.NAME.ATTRIBUTE}`, where `TYPE` is the resource type, in this case `aws_vpc`, `NAME` the resource name (here `todo_vpc`) and attribute specifies the VPCs id.
+Now we assign a public subnet to our VPC, this is where the servers we are about to create will live in. The attachment to our existing VPC is created via the attribute `vpc_id`, where the id of the previously defined VPC is referenced. The syntax for referencing resources in Terraform is `${TYPE.NAME.ATTRIBUTE}`, where `TYPE` is the resource type, in this case `aws_vpc`, `NAME` the resource name (here `todo_vpc`) and attribute specifies the VPCs id.
 Of course those private networks are not available from outside AWS so we configure `map_public_ip_on_launch` to `true` which means that a publicly reachable ip address gets assigned to all new instances that are launched ins this subnet.
 
 <!-- snippet:deploy_aws_public_subnet -->
@@ -71,7 +71,44 @@ $ export AWS_ACCESS_KEY_ID="${access_key_id}"
 $ export AWS_SECRET_ACCESS_KEY="${secret_access_key}"
 $ terraform plan
 
-XXX insert plan output XXX
+Refreshing Terraform state in-memory prior to plan...
+The refreshed state will be used to calculate this plan, but will not be
+persisted to local or remote state storage.
+
+------------------------------------------------------------------------
+An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+[...]
+
+  + aws_vpc.todo_vpc
+      id:                                          <computed>
+      assign_generated_ipv6_cidr_block:            "false"
+      cidr_block:                                  "10.0.0.0/16"
+      default_network_acl_id:                      <computed>
+      default_route_table_id:                      <computed>
+      default_security_group_id:                   <computed>
+      dhcp_options_id:                             <computed>
+      enable_classiclink:                          <computed>
+      enable_classiclink_dns_support:              <computed>
+      enable_dns_hostnames:                        "true"
+      enable_dns_support:                          "true"
+      instance_tenancy:                            <computed>
+      ipv6_association_id:                         <computed>
+      ipv6_cidr_block:                             <computed>
+      main_route_table_id:                         <computed>
+
+
+Plan: 5 to add, 0 to change, 0 to destroy.
+
+------------------------------------------------------------------------
+
+Note: You didn't specify an "-out" parameter to save this plan, so Terraform
+can't guarantee that exactly these actions will be performed if
+"terraform apply" is subsequently run.
 ```
 
 Terraform just compared it internal state that is stored in the `terraform.tfstate*` files against the running configuration in AWS. As nothing is yet available in AWS Terraform show that it would create new resources for every item in our configuration.
@@ -87,9 +124,28 @@ Now that we checked the plan lets finally apply it and create our first AWS reso
 ```
 $ export AWS_ACCESS_KEY_ID="${access_key_id}"
 $ export AWS_SECRET_ACCESS_KEY="${secret_access_key}"
-$ terraform plan
+$ terraform apply
 
-XXX insert apply output XXX
+aws_vpc.todo_vpc: Creating...
+  assign_generated_ipv6_cidr_block: "" => "false"
+  cidr_block:                       "" => "10.0.0.0/16"
+  default_network_acl_id:           "" => "<computed>"
+  default_route_table_id:           "" => "<computed>"
+  default_security_group_id:        "" => "<computed>"
+  dhcp_options_id:                  "" => "<computed>"
+  enable_classiclink:               "" => "<computed>"
+  enable_classiclink_dns_support:   "" => "<computed>"
+  enable_dns_hostnames:             "" => "true"
+  enable_dns_support:               "" => "true"
+  instance_tenancy:                 "" => "<computed>"
+  ipv6_association_id:              "" => "<computed>"
+  ipv6_cidr_block:                  "" => "<computed>"
+  main_route_table_id:              "" => "<computed>"
+aws_vpc.todo_vpc: Creation complete after 2s (ID: vpc-5a56ff31)
+
+[...]
+
+Apply complete! Resources: 5 added, 0 changed, 0 destroyed.
 ```
 
 Terraform now created an AWS VPC according to our configuration, when we log in into the AWS console we can see the VPC, the associated network and its routing configuration including the internet gateway.

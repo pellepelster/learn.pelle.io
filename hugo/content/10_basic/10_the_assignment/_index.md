@@ -11,6 +11,7 @@ Congratulations, you just landed your first job at Todo Inc. After endless night
 ## Project Files
 
 ## Backend
+
 Lets start by looking at what we got. The backend is implemented using the Spring Boot framework and luckily the responsible developer wrote a Gradle file so to start the backend we just have to run:
 
 ```
@@ -19,11 +20,11 @@ $ ./gradlew bootRun
 ```
 
 {{% notice tip %}}
-The build.gradle file includes the Idea (`apply plugin: 'idea'`) and the Eclipse plugin (`apply plugin: 'eclipse'`) which allows us to create IntelliJ or Eclipse project files by calling `./gradlew idea` respectively `./gradlew eclipse`. Afterwards we can 
- open the project directly in our favorite IDE creating a hassle free developer experience.
+The build.gradle file also includes the Idea (`apply plugin: 'idea'`) and the Eclipse plugin (`apply plugin: 'eclipse'`) allowing us to create IntelliJ or Eclipse project files by calling `./gradlew idea` respectively `./gradlew eclipse`. Afterwards we can directly open the project directly in our favorite IDE creating a hassle free developer experience.
 {{% /notice %}}
 
 ## Frontend
+
 The frontend team has gifted is with a a Vue.js based frontend that also contains some basic unit tests. It is built and bundled using webpack, so to start the frontend locally just change into the the frontend project directory, and run npm:
 
 ```
@@ -38,7 +39,7 @@ The frontend is now available at http://localhost:8080, and it is expecting a ru
 
 ![Screenshot](http://via.placeholder.com/800x600)
 
-The local dev instance comes with all bells and whistles like live reloading for code and css, to create the real deployable artifacts run the build via npm:
+The local dev instance of the frontend comes with all bells and whistles like live reloading for code and css, to create the real deployable artifacts run the build via npm:
 
 ```
 $ cd todo-frontend
