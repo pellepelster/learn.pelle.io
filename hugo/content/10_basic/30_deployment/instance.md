@@ -342,7 +342,7 @@ instance_fqdn = ec2-35-158-106-80.eu-central-1.compute.amazonaws.com
 Et voila, that configuration is applied and as we can see from the output `instance_fqdn` our application is happily humming along at http://${instance_fqdn}:9090.
 
 
-![First deployment](../first_deployment.png)
+{{< figure src="../first_deployment.png" title="First deployment" >}}
 
 
 ## Cleanup

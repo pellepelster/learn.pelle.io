@@ -34,8 +34,7 @@ AWS offers a free trial for most of the services for the first 12 months (of cou
 ### Source code
 If source code is available for a specific topic a link inside the breadcrumb panel on the top of the page will directly link to it.  
 
-![breadcrumb source link](breadcrumbs_sources_link.png)
-
+{{< figure src="breadcrumbs_sources_link.png" title="Breadcrumb Source Link" >}}
 
 ### Snippets
 
