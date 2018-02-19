@@ -37,7 +37,8 @@ I  Your application is running here: http://localhost:8080
 
 The frontend is now available at http://localhost:8080, and it is expecting a running backend at http://localhost:9090.
 
-![Screenshot](http://via.placeholder.com/800x600)
+![First run](first_run.png)
+
 
 The local dev instance of the frontend comes with all bells and whistles like live reloading for code and css, to create the real deployable artifacts run the build via npm:
 
