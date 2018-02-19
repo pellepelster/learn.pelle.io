@@ -340,3 +340,66 @@ instance_fqdn = ec2-35-158-106-80.eu-central-1.compute.amazonaws.com
 ```
 
 Et voila, that configuration is applied and as we can see from the output `instance_fqdn` our application is happily humming along at http://${instance_fqdn}:9090.
+
+
+![First deployment](../first_deployment.png)
+
+
+## Cleanup
+
+Congratulations you made your first deployment, please do not forget to delete the resources we just created, because otherwise you may have to pay for them if you exceed the AWS free tier offerings.
+
+```
+$ terraform destroy --force -var 'application_jar=todo-0.0.1.jar'
+
+[...]
+
+An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  - aws_instance.todo_instance
+
+  - aws_internet_gateway.todo_internet_gateway
+
+  - aws_key_pair.todo_keypair
+
+  - aws_main_route_table_association.todo_main_route_table_association
+
+  - aws_route_table.todo_main_route_table
+
+  - aws_security_group.todo_instance_http_security_group
+
+  - aws_security_group.todo_instance_ssh_security_group
+
+  - aws_subnet.public_subnet
+
+  - aws_vpc.todo_vpc
+
+
+Plan: 0 to add, 0 to change, 9 to destroy.
+
+[...]
+
+aws_main_route_table_association.todo_main_route_table_association: Destroying... (ID: rtbassoc-13e08a79)
+aws_instance.todo_instance: Destroying... (ID: i-0a7b3ee83b5f1be70)
+aws_main_route_table_association.todo_main_route_table_association: Destruction complete after 0s
+aws_route_table.todo_main_route_table: Destroying... (ID: rtb-2f5c0e44)
+aws_route_table.todo_main_route_table: Destruction complete after 1s
+aws_internet_gateway.todo_internet_gateway: Destroying... (ID: igw-1a83e772)
+aws_instance.todo_instance: Still destroying... (ID: i-0a7b3ee83b5f1be70, 10s elapsed)
+aws_internet_gateway.todo_internet_gateway: Still destroying... (ID: igw-1a83e772, 10s elapsed)
+aws_instance.todo_instance: Still destroying... (ID: i-0a7b3ee83b5f1be70, 20s elapsed)
+aws_internet_gateway.todo_internet_gateway: Still destroying... (ID: igw-1a83e772, 20s elapsed)
+
+[...]
+
+aws_vpc.todo_vpc: Destroying... (ID: vpc-0a0aa161)
+aws_vpc.todo_vpc: Destruction complete after 0s
+
+Destroy complete! Resources: 9 destroyed.
+```
+
+Now everything we created is destroyed, but as we have the code we can create it again anytime we want.

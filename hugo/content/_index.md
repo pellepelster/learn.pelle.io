@@ -22,6 +22,12 @@ All tools should be available by your package manager in case of Linux or by [br
 - [Install Terraform](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 - [Install Java JDK 8](https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html)
 
+Additionally you will need to create an account for Amazon Web Services which can be done [here](https://portal.aws.amazon.com/billing/signup#/start).
+
+{{% notice warning %}}
+AWS offers a free trial for most of the services for the first 12 months (of course with usage/instance size limits). This guide tries to use as much of this free tier as possible, but please be aware that costs may occur.
+{{% /notice %}} 
+
 
 ## Conventions
 
