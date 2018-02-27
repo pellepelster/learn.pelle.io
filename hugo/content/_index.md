@@ -18,8 +18,8 @@ In order to reproduce the examples in this guide you will need the following too
 
 All tools should be available by your package manager in case of Linux or by [brew](https://brew.sh/) if you work on a Mac. In case something is missing have a look at the following links for installation instructions:
 
-- [Install Git](https://www.terraform.io/intro/getting-started/install.html)
-- [Install Terraform](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- [Install Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- [Install Terraform](https://www.terraform.io/intro/getting-started/install.html)
 - [Install Java JDK 8](https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html)
 
 Additionally you will need to create an account for Amazon Web Services which can be done [here](https://portal.aws.amazon.com/billing/signup#/start).
