@@ -32,7 +32,10 @@ ARGV.each do|filename|
     end
 
     snippet_content = lines[start, length].collect {|line| line[:content] }.join('')
-
+    if File.exist?(snippet_filename)
+      puts "snippet #{snippet_filename} already exists, skipping"
+      next
+    end
     open(snippet_filename, 'w') { |file|
       line_start = lines[snippet[:start] + 1][:number]
       line_end = lines[snippet[:end] -1][:number]

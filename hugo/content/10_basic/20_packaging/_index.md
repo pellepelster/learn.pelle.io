@@ -61,7 +61,7 @@ allprojects {
 As already mentioned it is vitally important for the build not to rely on any local prerequistes on the machine that executes the build. Keep in mind that the build has to work on your machine, your coworkers machine or in a continus integration environment. Luckily for us a [node.js plugin](https://github.com/srs/gradle-node-plugin) for Gradle already exists that creates a node.js environment for us, we just have to apply the plugin from the public Gradle maven repository:
 
 <!-- snippet:frontend_nodejs_plugin_dependency -->
-{{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L1-L13" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/20_packaging/todo-frontend/build.gradle#L1-L13" %}}build.gradle{{% /github %}}
 {{< highlight go "" >}}
 buildscript {
 	repositories {
@@ -82,7 +82,7 @@ apply plugin: 'com.moowork.node'
 The plugin can be configured to use a specific node.js/npm version:
 
 <!-- snippet:frontend_nodejs_plugin_configuration -->
-{{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L15-L21" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/20_packaging/todo-frontend/build.gradle#L15-L21" %}}build.gradle{{% /github %}}
 {{< highlight go "" >}}
 node {
   version = '6.3.1'
@@ -97,7 +97,7 @@ node {
 Now we create a new task that executes the npm build:
 
 <!-- snippet:frontend_nodejs_build -->
-{{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L23-L27" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/20_packaging/todo-frontend/build.gradle#L23-L27" %}}build.gradle{{% /github %}}
 {{< highlight go "" >}}
 task frontendBuild(type: NpmTask) {
 	args = [ 'run', 'build' ]
@@ -110,7 +110,7 @@ frontendBuild.dependsOn('npmInstall')
 and package the resulting filses from the `dist` folder in a jar file:
 
 <!-- snippet:frontend_nodejs_jar -->
-{{% github href="10_basic/30_deployment/todo-frontend/build.gradle#L29-L36" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/20_packaging/todo-frontend/build.gradle#L29-L36" %}}build.gradle{{% /github %}}
 {{< highlight go "" >}}
 task frontendJar(type: Jar) {
  	appendix = 'frontend'
@@ -133,15 +133,17 @@ dsadas
 As the backend is already built with Gradle we only need some minor modifications. The `spring-boot-gradle-plugin` we are using already provides a task that creates a fat jar file containing all dependencies needed to run the application. To also serve the static files for the frontend we need to add a dependency to the frontend build we just created:
 
 <!-- snippet:frontend_backend_dependency -->
-{{% github href="10_basic/30_deployment/todo-server/build.gradle#L26-L38" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/20_packaging/todo-server/build.gradle#L26-L40" %}}build.gradle{{% /github %}}
 {{< highlight go "" >}}
 dependencies {
     compile('com.google.guava:guava:23.6-jre')
     compile('org.apache.derby:derby:10.14.1.0')
     compile('org.springframework.boot:spring-boot-starter-web:1.5.9.RELEASE')
+    compile('org.springframework.boot:spring-boot-starter-hateoas:1.5.9.RELEASE')
     compile('org.springframework.boot:spring-boot-starter-data-jpa:1.5.9.RELEASE')
 
     testCompile('org.springframework.boot:spring-boot-starter-test:1.5.9.RELEASE')
+
     testCompile('com.jayway.jsonpath:json-path-assert:2.2.0')
     testCompile('org.springframework:spring-test')
     testCompile('junit:junit')
@@ -177,7 +179,7 @@ class FrontendContent extends WebMvcConfigurerAdapter {
 As a finishing touch we set the `executable` attribute of the Spring Boot gradle plugin to `true` makes the JAR file directly executable by adding a start script in front of the JAR file.
 
 <!-- snippet:backend_executable -->
-{{% github href="10_basic/30_deployment/todo-server/build.gradle#L17-L19" %}}build.gradle{{% /github %}}
+{{% github href="10_basic/20_packaging/todo-server/build.gradle#L17-L19" %}}build.gradle{{% /github %}}
 {{< highlight go "" >}}
 springBoot {
     executable = true

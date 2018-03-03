@@ -5,11 +5,15 @@ import java.io.Serializable;
 import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotEmpty;
 
-public class NewTodo implements Serializable {
+public class NewTodoItem implements Serializable {
 
   @NotNull @NotEmpty private String description;
 
-  public NewTodo() {}
+  public NewTodoItem() {}
+
+  public NewTodoItem(String description) {
+    this.description = description;
+  }
 
   public String getDescription() {
     return description;

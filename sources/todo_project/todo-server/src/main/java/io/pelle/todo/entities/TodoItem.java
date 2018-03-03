@@ -1,13 +1,18 @@
-package io.pelle.todo.dto;
+package io.pelle.todo.entities;
 
 import java.io.Serializable;
 import java.util.UUID;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 @Entity
-public class Todo implements Serializable {
+public class TodoItem implements Serializable {
 
   @Id @Column private UUID id;
 
@@ -17,15 +22,18 @@ public class Todo implements Serializable {
   @Column()
   private boolean complete;
 
-  public Todo() {}
+  @ManyToOne(fetch = FetchType.EAGER)
+  private TodoList todoList;
 
-  public Todo(UUID id, String description, boolean complete) {
+  public TodoItem() {}
+
+  public TodoItem(UUID id, String description, boolean complete) {
     this.id = id;
     this.description = description;
     this.complete = complete;
   }
 
-  public Todo(String description) {
+  public TodoItem(String description) {
     this(UUID.randomUUID(), description, false);
   }
 
@@ -51,6 +59,14 @@ public class Todo implements Serializable {
 
   public void setComplete(boolean complete) {
     this.complete = complete;
+  }
+
+  public TodoList getTodoList() {
+    return todoList;
+  }
+
+  public void setTodoList(TodoList todoList) {
+    this.todoList = todoList;
   }
 
   @Override
